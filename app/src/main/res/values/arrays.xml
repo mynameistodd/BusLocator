@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="routes">
+        <item>1 - Pontiac - Dhu Varren</item>
+        <item>2 - Plymouth</item>
+        <item>3 - Huron River</item>
+        <item>4 - Washtenaw</item>
+        <item>5 - Packard</item>
+        <item>6 - Ellsworth</item>
+        <item>7 - South Main - East</item>
+        <item>8 - Pauline</item>
+        <item>9 - Dexter - Jackson</item>
+        <item>10 - Ypsilanti - Northeast</item>
+        <item>11 - Ypsilanti - South</item>
+        <item>13 - Newport</item>
+        <item>14 - Geddes - E Stadium</item>
+        <item>15 - Scio Church - W Stadium</item>
+        <item>16 - Ann Arbor - Saline Rd</item>
+        <item>17 - Amtrak - Depot</item>
+        <item>18 - Miller - University</item>
+        <item>20 - Ypsilanti Grove - Ecorse</item>
+        <item>22 - North-South Connector</item>
+        <item>36 - Wolverine Tower Shuttle</item>
+        <item>46 - Huron - Textile</item>
+        <item>609 - Dexter - University</item>
+        <item>710 - ExpressRide Chelsea</item>
+        <item>711 - ExpressRide Canton</item>
+        <item>12A - Miller - Liberty</item>
+        <item>12B - Liberty - Miller</item>
+        <item>2C - Plymouth Glazier South</item>
+        <item>1U - Pontiac - University</item>
+    </string-array>
+</resources>
