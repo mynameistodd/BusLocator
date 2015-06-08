@@ -4,12 +4,10 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -18,7 +16,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -26,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -153,23 +151,34 @@ public class MainActivity extends AppCompatActivity implements
         RequestQueue queue = Volley.newRequestQueue(this);
         String url ="http://mobile.theride.org/models/GetBusLocation.aspx?routeID=" + routeID;
 
-        GsonRequest<BusLocation[]> busLocationGsonRequest = new GsonRequest<BusLocation[]>(url, BusLocation[].class, null,
+        GsonRequest<BusLocation[]> busLocationGsonRequest = new GsonRequest<>(url, BusLocation[].class, null,
                 new Response.Listener<BusLocation[]>() {
                     @Override
                     public void onResponse(BusLocation[] response) {
                         mMap.clear();
 
                         if (response != null) {
+                            LatLng busLatLng = null;
+                            Marker busMarker = null;
                             for (BusLocation busLocation : response) {
                                 String lat = busLocation.getLattitude();
                                 String lng = busLocation.getLongitude();
 
+                                busLatLng = new LatLng(Double.valueOf(lat), Double.valueOf(lng));
 
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(Double.valueOf(lat), Double.valueOf(lng)))
+                                busMarker = mMap.addMarker(new MarkerOptions()
+                                        .position(busLatLng)
                                         .title(busLocation.getAdherence())
                                         .snippet("Bus# " + busLocation.getBus() + " Updated: " + busLocation.getTimestamp())
                                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_action_bus)));
+
+                            }
+
+                            if (busLatLng != null) {
+                                mMap.animateCamera(CameraUpdateFactory.newLatLng(busLatLng));
+                            }
+                            if (busMarker != null) {
+                                busMarker.showInfoWindow();
                             }
                         }
                     }
