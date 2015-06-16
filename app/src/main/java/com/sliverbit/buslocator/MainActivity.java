@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MainActivity extends AppCompatActivity implements
-        RouteDialogFragment.NoticeDialogListener,
+        RouteDialogFragment.RouteDialogListener,
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
