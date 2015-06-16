@@ -1,0 +1,60 @@
+route_long_name,route_type,route_text_color,route_color,agency_id,route_id,route_url,route_desc,route_short_name
+Amtrak - Depot,3,FFFFFF,FF0000,,2903,,,17
+Ann Arbor - Saline Rd,3,FFFFFF,FF8040,,2902,,,16
+Scio Church - W Stadium,3,FFFFFF,8080FF,,2901,,,15
+Geddes - E Stadium,3,FFFFFF,00FFFF,,2900,,,14
+Ypsilanti Grove - Ecorse,3,FFFFFF,804040,,2907,,,20
+Plymouth,3,FFFFFF,008080,,2906,,,2
+Pontiac - University,3,FFFFFF,FF0080,,2905,,,1U
+Miller - University,3,FFFFFF,FF00FF,,2904,,,18
+Packard,3,FFFFFF,8000FF,,2920,,,5
+Plymouth Glazier South,3,FFFFFF,008080,,2909,,,2C
+North-South Connector,3,FFFFFF,8080FF,,2908,,,22
+Dexter - University,3,FFFFFF,FF0000,,2925,,,609
+Ellsworth,3,FFFFFF,800080,,2924,,,6
+ExpressRide Chelsea,3,FFFFFF,00FF00,,2927,,,710
+South Main - East,3,FFFFFF,008040,,2926,,,7
+ExpressRide Canton,3,FFFFFF,00FF00,,2966,,,711
+Huron River,3,FFFFFF,800080,,2948,,,3
+Plymouth Glazier South,3,FFFFFF,008080,,2947,,,2C
+North-South Connector,3,FFFFFF,8080FF,,2946,,,22
+Ypsilanti Grove - Ecorse,3,FFFFFF,804040,,2945,,,20
+Plymouth,3,FFFFFF,008080,,2944,,,2
+ExpressRide Canton,3,FFFFFF,00FF00,,2928,,,711
+Miller - University,3,FFFFFF,FF00FF,,2942,,,18
+Dexter - Jackson,3,FFFFFF,8080FF,,2969,,,9
+Ann Arbor - Saline Rd,3,FFFFFF,FF8040,,2940,,,16
+Geddes - E Stadium,3,FFFFFF,00FFFF,,2938,,,14
+Dexter - University,3,FFFFFF,FF0000,,2963,,,609
+Pontiac - University,3,FFFFFF,FF0080,,2943,,,1U
+Ellsworth,3,FFFFFF,800080,,2962,,,6
+Liberty - Miller,3,FFFFFF,008080,,2936,,,12B
+Amtrak - Depot,3,FFFFFF,FF0000,,2941,,,17
+ExpressRide Chelsea,3,FFFFFF,00FF00,,2965,,,710
+Newport,3,FFFFFF,0080C0,,2937,,,13
+Pauline,3,FFFFFF,00FF80,,2968,,,8
+Huron River,3,FFFFFF,800080,,2910,,,3
+College of Business Shuttle,3,FFFFFF,00FF00,,2911,,,33
+Wolverine Tower Shuttle,3,FFFFFF,408080,,2916,,,36
+Scio Church - W Stadium,3,FFFFFF,8080FF,,2939,,,15
+Washtenaw,3,FFFFFF,8080FF,,2918,,,4
+Huron - Textile,3,FFFFFF,00FF00,,2919,,,46
+Ypsilanti - South,3,FFFFFF,0000FF,,2934,,,11
+Miller - Liberty,3,FFFFFF,008000,,2935,,,12A
+Pontiac - Dhu Varren,3,FFFFFF,800000,,2932,,,1
+Ypsilanti - Northeast,3,FFFFFF,00FF00,,2933,,,10
+Pauline,3,FFFFFF,00FF80,,2930,,,8
+Dexter - Jackson,3,FFFFFF,8080FF,,2931,,,9
+South Main - East,3,FFFFFF,008040,,2964,,,7
+Wolverine Tower Shuttle,3,FFFFFF,408080,,2954,,,36
+Washtenaw,3,FFFFFF,8080FF,,2956,,,4
+Huron - Textile,3,FFFFFF,00FF00,,2957,,,46
+Newport,3,FFFFFF,0080C0,,2899,,,13
+Liberty - Miller,3,FFFFFF,008080,,2898,,,12B
+Ypsilanti - Northeast,3,FFFFFF,00FF00,,2895,,,10
+Pontiac - Dhu Varren,3,FFFFFF,800000,,2894,,,1
+Miller - Liberty,3,FFFFFF,008000,,2897,,,12A
+Ypsilanti - South,3,FFFFFF,0000FF,,2896,,,11
+AirRide,3,FFFFFF,00FF00,,2967,,,787
+Packard,3,FFFFFF,8000FF,,2958,,,5
+AirRide,3,FFFFFF,00FF00,,2929,,,787

@@ -13,6 +13,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    public static GoogleAnalytics analytics;
+    public static Tracker tracker;
     private SharedPreferences mPrefs;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -44,8 +49,13 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         mPrefs = getPreferences(Context.MODE_PRIVATE);
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        analytics = GoogleAnalytics.getInstance(this);
 
+        tracker = analytics.newTracker(R.xml.global_tracker);
+        tracker.enableAdvertisingIdCollection(true);
+
+        //Do map things
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -53,6 +63,22 @@ public class MainActivity extends AppCompatActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+//        //Get csv file read things ready
+//        InputStream routes = getResources().openRawResource(R.raw.routes);
+//        CSVReader routesReader = new CSVReader(new InputStreamReader(routes));
+//
+//        try {
+//            List<String[]> myEntries = routesReader.readAll();
+//
+//            for (String[] row : myEntries)
+//            {
+//                Log.d("BusLocator", row.toString());
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
     }
 
     @Override
@@ -87,8 +113,20 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.action_route:
                 DialogFragment routeDialogFragment = new RouteDialogFragment();
                 routeDialogFragment.show(getFragmentManager(), "routeFragment");
+                tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory("UX")
+                                .setAction("click")
+                                .setLabel("route picker")
+                                .build()
+                );
                 return true;
             case R.id.action_refresh:
+                tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory("UX")
+                                .setAction("click")
+                                .setLabel("refresh")
+                                .build()
+                );
                 refresh();
                 return true;
             case R.id.action_settings:
