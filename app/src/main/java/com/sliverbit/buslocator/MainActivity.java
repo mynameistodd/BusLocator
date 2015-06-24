@@ -3,7 +3,6 @@ package com.sliverbit.buslocator;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -28,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sliverbit.buslocator.models.Location;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements
     public static Tracker tracker;
     private SharedPreferences mPrefs;
     private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
+    private android.location.Location mLastLocation;
     private GoogleMap mMap;
 
     @Override
@@ -184,22 +184,21 @@ public class MainActivity extends AppCompatActivity implements
 
     private void refresh() {
         int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
-        int routeID = getRouteID(savedRoute);
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://mobile.theride.org/models/GetBusLocation.aspx?routeID=" + routeID;
+        String url = "http://microapi.theride.org/Location/" + getRouteID(savedRoute);
 
-        GsonRequest<BusLocation[]> busLocationGsonRequest = new GsonRequest<>(url, BusLocation[].class, null,
-                new Response.Listener<BusLocation[]>() {
+        GsonRequest<Location[]> busLocationGsonRequest = new GsonRequest<>(url, Location[].class, null,
+                new Response.Listener<Location[]>() {
                     @Override
-                    public void onResponse(BusLocation[] response) {
+                    public void onResponse(Location[] response) {
                         mMap.clear();
 
                         if (response != null) {
                             LatLng busLatLng = null;
                             Marker busMarker = null;
-                            for (BusLocation busLocation : response) {
-                                String lat = busLocation.getLattitude();
+                            for (Location busLocation : response) {
+                                String lat = busLocation.getLat();
                                 String lng = busLocation.getLongitude();
 
                                 busLatLng = new LatLng(Double.valueOf(lat), Double.valueOf(lng));
@@ -207,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements
                                 busMarker = mMap.addMarker(new MarkerOptions()
                                         .position(busLatLng)
                                         .title(busLocation.getAdherence())
-                                        .snippet("Bus# " + busLocation.getBus() + " Updated: " + busLocation.getTimestamp())
+                                        .snippet("Bus# " + busLocation.getBusNum() + " Updated: " + busLocation.getTimestamp())
                                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_action_bus)));
 
                             }
@@ -231,65 +230,65 @@ public class MainActivity extends AppCompatActivity implements
         queue.add(busLocationGsonRequest);
     }
 
-    private int getRouteID(int savedRoute) {
+    private String getRouteID(int savedRoute) {
         switch (savedRoute) {
             case 0:
-                return 1;
+                return "1";
             case 1:
-                return 11;
+                return "2";
             case 2:
-                return 14;
+                return "3";
             case 3:
-                return 22;
+                return "4";
             case 4:
-                return 25;
+                return "5";
             case 5:
-                return 29;
+                return "6";
             case 6:
-                return 32;
+                return "7";
             case 7:
-                return 38;
+                return "8";
             case 8:
-                return 23;
+                return "9";
             case 9:
-                return 2;
+                return "10";
             case 10:
-                return 3;
+                return "11";
             case 11:
-                return 5;
+                return "13";
             case 12:
-                return 30;
+                return "14";
             case 13:
-                return 6;
+                return "15";
             case 14:
-                return 7;
+                return "16";
             case 15:
-                return 8;
+                return "17";
             case 16:
-                return 9;
+                return "18";
             case 17:
-                return 4;
+                return "20";
             case 18:
-                return 13;
+                return "22";
             case 19:
-                return 20;
+                return "36";
             case 20:
-                return 24;
+                return "46";
             case 21:
-                return 31;
+                return "609";
             case 22:
-                return 33;
+                return "710";
             case 23:
-                return 34;
+                return "711";
             case 24:
-                return 36;
+                return "12A";
             case 25:
-                return 37;
+                return "12B";
             case 26:
-                return 12;
+                return "2C";
             case 27:
-                return 10;
+                return "1U";
         }
-        return 0;
+        return "0";
     }
 }
