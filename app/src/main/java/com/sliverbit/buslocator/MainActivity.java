@@ -3,6 +3,7 @@ package com.sliverbit.buslocator;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -27,7 +28,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.sliverbit.buslocator.models.Location;
+import com.sliverbit.buslocator.models.StopsOnRoute;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -183,17 +186,45 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void refresh() {
+        mMap.clear();
         int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://microapi.theride.org/Location/" + getRouteID(savedRoute);
+        String urlStopsRoute = "http://microapi.theride.org/StopsOnRoute/" + getRouteID(savedRoute);
+        String urlLocation = "http://microapi.theride.org/Location/" + getRouteID(savedRoute);
 
-        GsonRequest<Location[]> busLocationGsonRequest = new GsonRequest<>(url, Location[].class, null,
+        GsonRequest<StopsOnRoute[]> routeRequest = new GsonRequest<>(urlStopsRoute, StopsOnRoute[].class, null,
+                new Response.Listener<StopsOnRoute[]>() {
+                    @Override
+                    public void onResponse(StopsOnRoute[] response) {
+                        if (response != null) {
+                            PolylineOptions lineOptions = new PolylineOptions();
+                            lineOptions.color(Color.BLUE);
+
+                            for (StopsOnRoute busLocation : response) {
+                                String lat = busLocation.getLattitude();
+                                String lng = busLocation.getLongitude();
+
+                                LatLng busLatLng = new LatLng(Double.valueOf(lat), Double.valueOf(lng));
+
+                                lineOptions.add(busLatLng);
+                            }
+
+                            mMap.addPolyline(lineOptions);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        GsonRequest<Location[]> locationRequest = new GsonRequest<>(urlLocation, Location[].class, null,
                 new Response.Listener<Location[]>() {
                     @Override
                     public void onResponse(Location[] response) {
-                        mMap.clear();
-
                         if (response != null) {
                             LatLng busLatLng = null;
                             Marker busMarker = null;
@@ -227,7 +258,8 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 });
 
-        queue.add(busLocationGsonRequest);
+        queue.add(routeRequest);
+        queue.add(locationRequest);
     }
 
     private String getRouteID(int savedRoute) {
