@@ -14,6 +14,10 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+def versionMajor = 1
+def versionMinor = 0
+def versionPatch = 0
+def versionBuild = 2 // bump for dogfood builds, public betas, etc.
 
 android {
     compileSdkVersion 22
@@ -23,8 +27,8 @@ android {
         applicationId "com.sliverbit.buslocator"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}"
     }
     buildTypes {
         release {
@@ -32,6 +36,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
