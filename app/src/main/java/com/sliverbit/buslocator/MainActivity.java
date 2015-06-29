@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -32,6 +33,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.sliverbit.buslocator.models.Location;
 import com.sliverbit.buslocator.models.StopsOnRoute;
 
+import io.fabric.sdk.android.Fabric;
+
 
 public class MainActivity extends AppCompatActivity implements
         RouteDialogFragment.RouteDialogListener,
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         mPrefs = getPreferences(Context.MODE_PRIVATE);
 
@@ -66,22 +70,6 @@ public class MainActivity extends AppCompatActivity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
-//        //Get csv file read things ready
-//        InputStream routes = getResources().openRawResource(R.raw.routes);
-//        CSVReader routesReader = new CSVReader(new InputStreamReader(routes));
-//
-//        try {
-//            List<String[]> myEntries = routesReader.readAll();
-//
-//            for (String[] row : myEntries)
-//            {
-//                Log.d("BusLocator", row.toString());
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
     }
 
     @Override
