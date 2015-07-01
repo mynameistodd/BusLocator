@@ -120,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements
                 );
                 refresh();
                 return true;
-            case R.id.action_settings:
-                return true;
+//            case R.id.action_settings:
+//                return true;
         }
 
         return super.onOptionsItemSelected(item);
