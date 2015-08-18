@@ -97,6 +97,15 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
+        if (savedRoute > 0) {
+            menu.findItem(R.id.action_route).setTitle("Route " + getRouteID(savedRoute));
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -164,13 +173,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void onDialogDismissed() {
+        invalidateOptionsMenu();
         refresh();
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        //do nothing?
     }
 
     private void refresh() {

@@ -14,7 +14,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 /**
- * Created by tdeland on 5/17/15.
+ * BusLocator
+ * Created by todd on 5/17/15.
  */
 public class RouteDialogFragment extends DialogFragment {
 
@@ -63,7 +64,7 @@ public class RouteDialogFragment extends DialogFragment {
                         mPrefsEditor.putInt(getString(R.string.saved_route), mSelectedItem);
                         mPrefsEditor.commit();
 
-                        mListener.onDialogPositiveClick(RouteDialogFragment.this);
+                        mListener.onDialogDismissed();
                         tracker.send(new HitBuilders.EventBuilder()
                                         .setCategory("UX")
                                         .setAction("click")
@@ -74,7 +75,7 @@ public class RouteDialogFragment extends DialogFragment {
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mListener.onDialogNegativeClick(RouteDialogFragment.this);
+                        mListener.onDialogDismissed();
                         tracker.send(new HitBuilders.EventBuilder()
                                         .setCategory("UX")
                                         .setAction("click")
@@ -87,9 +88,12 @@ public class RouteDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    public interface RouteDialogListener {
-        void onDialogPositiveClick(DialogFragment dialog);
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+    }
 
-        void onDialogNegativeClick(DialogFragment dialog);
+    public interface RouteDialogListener {
+        void onDialogDismissed();
     }
 }
