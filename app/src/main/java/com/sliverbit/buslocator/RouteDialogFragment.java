@@ -12,6 +12,10 @@ import android.os.Bundle;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.sliverbit.buslocator.models.RouteName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BusLocator
@@ -24,7 +28,20 @@ public class RouteDialogFragment extends DialogFragment {
     RouteDialogListener mListener;
     SharedPreferences mPrefs;
     SharedPreferences.Editor mPrefsEditor;
+    List<String> routeItems;
     private int mSelectedItem;
+
+    //    public RouteDialogFragment(List<RouteName> routeItems) {
+//
+//        List<String> temp = new ArrayList<>();
+//        for (RouteName routeName : routeItems) {
+//            temp.add(routeName.getRouteAbbr() + " - " + routeName.getName());
+//        }
+//
+//        this.routeItems = temp;
+//    }
+    public RouteDialogFragment() {
+    }
 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -33,21 +50,35 @@ public class RouteDialogFragment extends DialogFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement RouteDialogListener");
         }
-        mPrefs = activity.getPreferences(Context.MODE_PRIVATE);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPrefs = getActivity().getPreferences(Context.MODE_PRIVATE);
         mPrefsEditor = mPrefs.edit();
 
         analytics = GoogleAnalytics.getInstance(getActivity());
         tracker = analytics.newTracker(R.xml.global_tracker);
+
+        Bundle args = getArguments();
+        ArrayList<RouteName> routes = args.getParcelableArrayList("routes");
+        List<String> temp = new ArrayList<>();
+        for (RouteName routeName : routes) {
+            temp.add(routeName.getRouteAbbr() + " - " + routeName.getName());
+        }
+
+        this.routeItems = temp;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mSelectedItem = 0;
         int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
-
+        CharSequence[] items = new CharSequence[routeItems.size()];
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_route)
-                .setSingleChoiceItems(R.array.routes, savedRoute, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(routeItems.toArray(items), savedRoute, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
                         mSelectedItem = which;
@@ -64,7 +95,7 @@ public class RouteDialogFragment extends DialogFragment {
                         mPrefsEditor.putInt(getString(R.string.saved_route), mSelectedItem);
                         mPrefsEditor.commit();
 
-                        mListener.onDialogDismissed();
+//                        mListener.onDialogDismissed();
                         tracker.send(new HitBuilders.EventBuilder()
                                         .setCategory("UX")
                                         .setAction("click")
@@ -75,7 +106,7 @@ public class RouteDialogFragment extends DialogFragment {
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mListener.onDialogDismissed();
+//                        mListener.onDialogDismissed();
                         tracker.send(new HitBuilders.EventBuilder()
                                         .setCategory("UX")
                                         .setAction("click")
@@ -91,6 +122,7 @@ public class RouteDialogFragment extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
+        mListener.onDialogDismissed();
     }
 
     public interface RouteDialogListener {

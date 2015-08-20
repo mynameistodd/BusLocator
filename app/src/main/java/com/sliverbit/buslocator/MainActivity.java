@@ -31,7 +31,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sliverbit.buslocator.models.Location;
+import com.sliverbit.buslocator.models.RouteName;
 import com.sliverbit.buslocator.models.StopsOnRoute;
+
+import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public static GoogleAnalytics analytics;
     public static Tracker tracker;
+    ArrayList<RouteName> routes;
     private SharedPreferences mPrefs;
     private GoogleApiClient mGoogleApiClient;
     private android.location.Location mLastLocation;
@@ -57,11 +61,9 @@ public class MainActivity extends AppCompatActivity implements
         mPrefs = getPreferences(Context.MODE_PRIVATE);
 
         analytics = GoogleAnalytics.getInstance(this);
-
         tracker = analytics.newTracker(R.xml.global_tracker);
         tracker.enableAdvertisingIdCollection(true);
 
-        //Do map things
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -82,6 +84,30 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
+        routes = new ArrayList<>();
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String urlRouteName = "http://microapi.theride.org/routenames/";
+
+        GsonRequest<RouteName[]> routeNameRequest = new GsonRequest<>(urlRouteName, RouteName[].class, null,
+                new Response.Listener<RouteName[]>() {
+                    @Override
+                    public void onResponse(RouteName[] response) {
+                        if (response != null) {
+                            for (RouteName routeName : response) {
+                                routes.add(routeName);
+                            }
+                        }
+                        refresh();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        queue.add(routeNameRequest);
     }
 
     @Override
@@ -99,9 +125,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
-        if (savedRoute > 0) {
-            menu.findItem(R.id.action_route).setTitle("Route " + getRouteID(savedRoute));
-        }
+        menu.findItem(R.id.action_route).setTitle("Route " + getRouteID(savedRoute));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -111,7 +135,10 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (id) {
             case R.id.action_route:
+                Bundle args = new Bundle();
+                args.putParcelableArrayList("routes", routes);
                 DialogFragment routeDialogFragment = new RouteDialogFragment();
+                routeDialogFragment.setArguments(args);
                 routeDialogFragment.show(getFragmentManager(), "routeFragment");
                 tracker.send(new HitBuilders.EventBuilder()
                                 .setCategory("UX")
@@ -150,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements
         settings.setMyLocationButtonEnabled(true);
         settings.setZoomControlsEnabled(true);
 
-        refresh();
+//        refresh();
     }
 
     @Override
@@ -255,65 +282,7 @@ public class MainActivity extends AppCompatActivity implements
         queue.add(locationRequest);
     }
 
-    private String getRouteID(int savedRoute) {
-        switch (savedRoute) {
-            case 0:
-                return "1";
-            case 1:
-                return "2";
-            case 2:
-                return "3";
-            case 3:
-                return "4";
-            case 4:
-                return "5";
-            case 5:
-                return "6";
-            case 6:
-                return "7";
-            case 7:
-                return "8";
-            case 8:
-                return "9";
-            case 9:
-                return "10";
-            case 10:
-                return "11";
-            case 11:
-                return "13";
-            case 12:
-                return "14";
-            case 13:
-                return "15";
-            case 14:
-                return "16";
-            case 15:
-                return "17";
-            case 16:
-                return "18";
-            case 17:
-                return "20";
-            case 18:
-                return "22";
-            case 19:
-                return "36";
-            case 20:
-                return "46";
-            case 21:
-                return "609";
-            case 22:
-                return "710";
-            case 23:
-                return "711";
-            case 24:
-                return "12A";
-            case 25:
-                return "12B";
-            case 26:
-                return "2C";
-            case 27:
-                return "1U";
-        }
-        return "0";
+    private String getRouteID(int savedRouteIndex) {
+        return routes.get(savedRouteIndex).getRouteAbbr();
     }
 }
