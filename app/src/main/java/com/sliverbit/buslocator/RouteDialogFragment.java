@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.sliverbit.buslocator.models.RouteName;
@@ -23,30 +22,20 @@ import java.util.List;
  */
 public class RouteDialogFragment extends DialogFragment {
 
-    public static GoogleAnalytics analytics;
-    public static Tracker tracker;
-    RouteDialogListener mListener;
-    SharedPreferences mPrefs;
-    SharedPreferences.Editor mPrefsEditor;
-    List<String> routeItems;
-    private int mSelectedItem;
+    private Tracker tracker;
+    private RouteDialogListener listener;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor prefsEditor;
+    private List<String> routeItems;
+    private int selectedItem;
 
-    //    public RouteDialogFragment(List<RouteName> routeItems) {
-//
-//        List<String> temp = new ArrayList<>();
-//        for (RouteName routeName : routeItems) {
-//            temp.add(routeName.getRouteAbbr() + " - " + routeName.getName());
-//        }
-//
-//        this.routeItems = temp;
-//    }
     public RouteDialogFragment() {
     }
 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (RouteDialogListener) activity;
+            listener = (RouteDialogListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement RouteDialogListener");
         }
@@ -55,11 +44,11 @@ public class RouteDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPrefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        mPrefsEditor = mPrefs.edit();
+        prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        prefsEditor = prefs.edit();
 
-        analytics = GoogleAnalytics.getInstance(getActivity());
-        tracker = analytics.newTracker(R.xml.global_tracker);
+        BusLocatorApplication application = (BusLocatorApplication) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
 
         Bundle args = getArguments();
         ArrayList<RouteName> routes = args.getParcelableArrayList("routes");
@@ -73,29 +62,28 @@ public class RouteDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mSelectedItem = 0;
-        int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
+        selectedItem = 0;
+        int savedRoute = prefs.getInt(getString(R.string.saved_route), 0);
         CharSequence[] items = new CharSequence[routeItems.size()];
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_route)
                 .setSingleChoiceItems(routeItems.toArray(items), savedRoute, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
-                        mSelectedItem = which;
+                        selectedItem = which;
                         tracker.send(new HitBuilders.EventBuilder()
                                         .setCategory("UX")
                                         .setAction("click")
-                                        .setLabel(String.valueOf(mSelectedItem))
+                                        .setLabel(String.valueOf(selectedItem))
                                         .build()
                         );
                     }
                 })
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mPrefsEditor.putInt(getString(R.string.saved_route), mSelectedItem);
-                        mPrefsEditor.commit();
+                        prefsEditor.putInt(getString(R.string.saved_route), selectedItem);
+                        prefsEditor.commit();
 
-//                        mListener.onDialogDismissed();
                         tracker.send(new HitBuilders.EventBuilder()
                                         .setCategory("UX")
                                         .setAction("click")
@@ -106,7 +94,6 @@ public class RouteDialogFragment extends DialogFragment {
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-//                        mListener.onDialogDismissed();
                         tracker.send(new HitBuilders.EventBuilder()
                                         .setCategory("UX")
                                         .setAction("click")
@@ -122,7 +109,7 @@ public class RouteDialogFragment extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        mListener.onDialogDismissed();
+        listener.onDialogDismissed();
     }
 
     public interface RouteDialogListener {

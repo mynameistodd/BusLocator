@@ -14,7 +14,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -35,6 +34,7 @@ import com.sliverbit.buslocator.models.RouteName;
 import com.sliverbit.buslocator.models.StopsOnRoute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -45,59 +45,52 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    public static GoogleAnalytics analytics;
-    public static Tracker tracker;
-    ArrayList<RouteName> routes;
-    private SharedPreferences mPrefs;
-    private GoogleApiClient mGoogleApiClient;
-    private android.location.Location mLastLocation;
-    private GoogleMap mMap;
+    private Tracker tracker;
+    private ArrayList<RouteName> routes;
+    private SharedPreferences prefs;
+    private GoogleApiClient googleApiClient;
+    private GoogleMap map;
+    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
-        mPrefs = getPreferences(Context.MODE_PRIVATE);
+        prefs = getPreferences(Context.MODE_PRIVATE);
 
-        analytics = GoogleAnalytics.getInstance(this);
-        tracker = analytics.newTracker(R.xml.global_tracker);
-        tracker.enableAdvertisingIdCollection(true);
+        BusLocatorApplication application = (BusLocatorApplication) getApplication();
+        tracker = application.getDefaultTracker();
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        queue = Volley.newRequestQueue(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+        googleApiClient.connect();
 
         routes = new ArrayList<>();
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String urlRouteName = "http://microapi.theride.org/routenames/";
 
+        String urlRouteName = "http://microapi.theride.org/routenames/";
         GsonRequest<RouteName[]> routeNameRequest = new GsonRequest<>(urlRouteName, RouteName[].class, null,
                 new Response.Listener<RouteName[]>() {
                     @Override
                     public void onResponse(RouteName[] response) {
                         if (response != null) {
-                            for (RouteName routeName : response) {
-                                routes.add(routeName);
-                            }
+                            Collections.addAll(routes, response);
+                            refresh();
                         }
-                        refresh();
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -111,8 +104,13 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        googleApiClient.disconnect();
         super.onStop();
     }
 
@@ -124,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
+        int savedRoute = prefs.getInt(getString(R.string.saved_route), 0);
         menu.findItem(R.id.action_route).setTitle("Route " + getRouteID(savedRoute));
         return super.onPrepareOptionsMenu(menu);
     }
@@ -165,27 +163,25 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        map = googleMap;
 
-        mMap.setMyLocationEnabled(true);
+        map.setMyLocationEnabled(true);
 
-        UiSettings settings = mMap.getUiSettings();
+        UiSettings settings = map.getUiSettings();
 
         settings.setAllGesturesEnabled(true);
         settings.setCompassEnabled(true);
         settings.setMapToolbarEnabled(true);
         settings.setMyLocationButtonEnabled(true);
         settings.setZoomControlsEnabled(true);
-
-//        refresh();
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 14));
+        android.location.Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                googleApiClient);
+        if (lastLocation != null) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 14));
         }
     }
 
@@ -206,10 +202,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void refresh() {
-        mMap.clear();
-        int savedRoute = mPrefs.getInt(getString(R.string.saved_route), 0);
+        map.clear();
+        int savedRoute = prefs.getInt(getString(R.string.saved_route), 0);
 
-        RequestQueue queue = Volley.newRequestQueue(this);
         String urlStopsRoute = "http://microapi.theride.org/StopsOnRoute/" + getRouteID(savedRoute);
         String urlLocation = "http://microapi.theride.org/Location/" + getRouteID(savedRoute);
 
@@ -230,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements
                                 lineOptions.add(busLatLng);
                             }
 
-                            mMap.addPolyline(lineOptions);
+                            map.addPolyline(lineOptions);
                         }
                     }
                 },
@@ -254,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                 busLatLng = new LatLng(Double.valueOf(lat), Double.valueOf(lng));
 
-                                busMarker = mMap.addMarker(new MarkerOptions()
+                                busMarker = map.addMarker(new MarkerOptions()
                                         .position(busLatLng)
                                         .title(busLocation.getAdherence())
                                         .snippet("Bus# " + busLocation.getBusNum() + " Updated: " + busLocation.getTimestamp())
@@ -263,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
                             if (busLatLng != null) {
-                                mMap.animateCamera(CameraUpdateFactory.newLatLng(busLatLng));
+                                map.animateCamera(CameraUpdateFactory.newLatLng(busLatLng));
                             }
                             if (busMarker != null) {
                                 busMarker.showInfoWindow();
@@ -283,6 +278,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private String getRouteID(int savedRouteIndex) {
-        return routes.get(savedRouteIndex).getRouteAbbr();
+        return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteAbbr() : "18";
     }
 }

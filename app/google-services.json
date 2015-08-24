@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_id": "crypto-plexus-94717",
+    "project_number": "1049951271881",
+    "name": "Bus Locator"
+  },
+  "client": [
+    {
+      "client_info": {
+        "client_id": "android:com.sliverbit.buslocator",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.sliverbit.buslocator"
+        }
+      },
+      "oauth_client": [],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-26489424-3"
+          }
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "ARTIFACT_VERSION": "1"
+}
