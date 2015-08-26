@@ -10,23 +10,27 @@
         android:layout_height="wrap_content"
         android:text="On time"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/primary_text"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/busNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bus# 474" />
+        android:text="Bus# 474"
+        android:textColor="@color/secondary_text" />
 
     <TextView
         android:id="@+id/busUpdated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Updated: 1 min ago" />
+        android:text="Updated: 1 min ago"
+        android:textColor="@color/secondary_text" />
 
     <TextView
         android:id="@+id/busDirection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Direction: to UM Hospital" />
+        android:text="Direction: to UM Hospital"
+        android:textColor="@color/secondary_text" />
 </LinearLayout>
