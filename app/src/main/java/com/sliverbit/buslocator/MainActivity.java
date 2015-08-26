@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -35,6 +37,7 @@ import com.sliverbit.buslocator.models.StopsOnRoute;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleApiClient googleApiClient;
     private GoogleMap map;
     private RequestQueue queue;
+    private HashMap<String, Location> busMarkerHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         queue = Volley.newRequestQueue(this);
+        busMarkerHashMap = new HashMap<>();
     }
 
     @Override
@@ -167,6 +172,36 @@ public class MainActivity extends AppCompatActivity implements
 
         map.setMyLocationEnabled(true);
 
+        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                if (busMarkerHashMap == null) {
+                    return null;
+                }
+
+                View busInfoWindow = getLayoutInflater().inflate(R.layout.bus_info_window, null);
+
+                Location busLocation = busMarkerHashMap.get(marker.getId());
+
+                TextView busNum = (TextView) busInfoWindow.findViewById(R.id.busNum);
+                TextView busAdherence = (TextView) busInfoWindow.findViewById(R.id.busAdherence);
+                TextView busUpdated = (TextView) busInfoWindow.findViewById(R.id.busUpdated);
+                TextView busDirection = (TextView) busInfoWindow.findViewById(R.id.busDirection);
+
+                busNum.setText("Bus# " + busLocation.getBusNum());
+                busAdherence.setText(busLocation.getAdherence());
+                busUpdated.setText("Updated: " + busLocation.getTimestamp());
+                busDirection.setText("Direction: " + busLocation.getRouteDirection());
+
+                return busInfoWindow;
+            }
+        });
+
         UiSettings settings = map.getUiSettings();
 
         settings.setAllGesturesEnabled(true);
@@ -203,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void refresh() {
         map.clear();
+        busMarkerHashMap.clear();
         int savedRoute = prefs.getInt(getString(R.string.saved_route), 0);
 
         String urlStopsRoute = "http://microapi.theride.org/StopsOnRoute/" + getRouteID(savedRoute);
@@ -243,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements
                         if (response != null) {
                             LatLng busLatLng = null;
                             Marker busMarker = null;
+
                             for (Location busLocation : response) {
                                 String lat = busLocation.getLat();
                                 String lng = busLocation.getLongitude();
@@ -255,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements
                                         .snippet("Bus# " + busLocation.getBusNum() + " Updated: " + busLocation.getTimestamp())
                                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_action_bus)));
 
+                                busMarkerHashMap.put(busMarker.getId(), busLocation);
                             }
 
                             if (busLatLng != null) {
