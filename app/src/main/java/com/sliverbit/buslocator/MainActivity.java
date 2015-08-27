@@ -194,9 +194,15 @@ public class MainActivity extends AppCompatActivity implements
                 TextView busDirection = (TextView) busInfoWindow.findViewById(R.id.busDirection);
 
                 busNum.setText("Bus# " + busLocation.getBusNum());
-                busAdherence.setText(busLocation.getAdherence());
+                busAdherence.setText(busLocation.getAdherenceText());
                 busUpdated.setText("Updated: " + busLocation.getTimestamp());
                 busDirection.setText("Direction: " + busLocation.getRouteDirection());
+
+                if (busLocation.getAdherence() > 0) {
+                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                } else if (busLocation.getAdherence() < 0) {
+                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                }
 
                 return busInfoWindow;
             }
@@ -288,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                 busMarker = map.addMarker(new MarkerOptions()
                                         .position(busLatLng)
-                                        .title(busLocation.getAdherence())
+                                        .title(busLocation.getAdherenceText())
                                         .snippet("Bus# " + busLocation.getBusNum() + " Updated: " + busLocation.getTimestamp())
                                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_action_bus)));
 

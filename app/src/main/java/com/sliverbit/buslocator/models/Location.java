@@ -22,7 +22,11 @@ public class Location {
     private String timePointStopID;
     private String timestamp;
 
-    public String getAdherence() {
+    public int getAdherence() {
+        return adherence;
+    }
+
+    public String getAdherenceText() {
         if (adherence == 0) {
             return "On time";
         } else if (adherence > 0) {
