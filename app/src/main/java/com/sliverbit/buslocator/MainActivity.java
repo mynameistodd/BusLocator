@@ -37,6 +37,7 @@ import com.sliverbit.buslocator.models.StopsOnRoute;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
@@ -93,6 +94,23 @@ public class MainActivity extends AppCompatActivity implements
                     public void onResponse(RouteName[] response) {
                         if (response != null) {
                             Collections.addAll(routes, response);
+                            Collections.sort(routes, new Comparator<RouteName>() {
+                                @Override
+                                public int compare(RouteName lhs, RouteName rhs) {
+                                    String aRoute = lhs.getRouteAbbr();
+                                    String bRoute = rhs.getRouteAbbr();
+
+                                    String pattern = "[^0-9]+";
+
+                                    String aRouteClean = aRoute.replaceAll(pattern, "");
+                                    String bRouteClean = bRoute.replaceAll(pattern, "");
+
+                                    int aRouteInt = Integer.parseInt(aRouteClean);
+                                    int bRouteInt = Integer.parseInt(bRouteClean);
+
+                                    return (aRouteInt == bRouteInt) ? 0 : (aRouteInt > bRouteInt) ? 1 : -1;
+                                }
+                            });
                             refresh();
                         }
 
