@@ -17,7 +17,7 @@ repositories {
 
 def versionMajor = 1
 def versionMinor = 2
-def versionPatch = 0
+def versionPatch = 1
 def versionBuild = 0 // bump for dogfood builds, public betas, etc.
 
 android {
@@ -48,7 +48,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-ads:7.8.0'
     compile project(':volley')
     compile 'com.google.code.gson:gson:2.3'
-    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
         transitive = true;
     }
 }
