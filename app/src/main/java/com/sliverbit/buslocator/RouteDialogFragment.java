@@ -28,6 +28,7 @@ public class RouteDialogFragment extends DialogFragment {
     private SharedPreferences.Editor prefsEditor;
     private List<String> routeItems;
     private int selectedItem;
+    private ArrayList<RouteName> routes;
 
     public RouteDialogFragment() {
     }
@@ -51,7 +52,7 @@ public class RouteDialogFragment extends DialogFragment {
         tracker = application.getDefaultTracker();
 
         Bundle args = getArguments();
-        ArrayList<RouteName> routes = args.getParcelableArrayList("routes");
+        routes = args.getParcelableArrayList("routes");
         List<String> temp = new ArrayList<>();
         for (RouteName routeName : routes) {
             temp.add(routeName.getRouteAbbr() + " - " + routeName.getName());
@@ -63,7 +64,7 @@ public class RouteDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         selectedItem = 0;
-        int savedRoute = prefs.getInt(getString(R.string.saved_route), 0);
+        int savedRoute = prefs.getInt(getString(R.string.saved_route_index), 0);
         CharSequence[] items = new CharSequence[routeItems.size()];
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_route)
@@ -81,7 +82,8 @@ public class RouteDialogFragment extends DialogFragment {
                 })
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        prefsEditor.putInt(getString(R.string.saved_route), selectedItem);
+                        prefsEditor.putInt(getString(R.string.saved_route_index), selectedItem);
+                        prefsEditor.putString(getString(R.string.saved_route_abbr), getRouteAbbr(selectedItem));
                         prefsEditor.commit();
 
                         tracker.send(new HitBuilders.EventBuilder()
@@ -110,6 +112,10 @@ public class RouteDialogFragment extends DialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         listener.onDialogDismissed();
+    }
+
+    private String getRouteAbbr(int savedRouteIndex) {
+        return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteAbbr() : "18";
     }
 
     public interface RouteDialogListener {

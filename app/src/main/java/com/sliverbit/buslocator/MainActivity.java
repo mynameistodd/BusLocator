@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        int savedRoute = prefs.getInt(getString(R.string.saved_route), 0);
-        menu.findItem(R.id.action_route).setTitle("Route " + getRouteID(savedRoute));
+        String savedRouteAbbr = prefs.getString(getString(R.string.saved_route_abbr), "18");
+        menu.findItem(R.id.action_route).setTitle("Route " + savedRouteAbbr);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -271,10 +271,10 @@ public class MainActivity extends AppCompatActivity implements
     private void refresh() {
         map.clear();
         busMarkerHashMap.clear();
-        int savedRoute = prefs.getInt(getString(R.string.saved_route), 0);
+        String savedRouteAbbr = prefs.getString(getString(R.string.saved_route_abbr), "18");
 
-        String urlStopsRoute = "http://microapi.theride.org/StopsOnRoute/" + getRouteID(savedRoute);
-        String urlLocation = "http://microapi.theride.org/Location/" + getRouteID(savedRoute);
+        String urlStopsRoute = "http://microapi.theride.org/StopsOnRoute/" + savedRouteAbbr;
+        String urlLocation = "http://microapi.theride.org/Location/" + savedRouteAbbr;
 
         GsonRequest<StopsOnRoute[]> routeRequest = new GsonRequest<>(urlStopsRoute, StopsOnRoute[].class, null,
                 new Response.Listener<StopsOnRoute[]>() {
@@ -345,9 +345,5 @@ public class MainActivity extends AppCompatActivity implements
 
         queue.add(routeRequest);
         queue.add(locationRequest);
-    }
-
-    private String getRouteID(int savedRouteIndex) {
-        return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteAbbr() : "18";
     }
 }
