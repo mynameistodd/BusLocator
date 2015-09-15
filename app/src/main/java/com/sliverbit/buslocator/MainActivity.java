@@ -99,6 +99,44 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
+        String urlRouteName = "http://microapi.theride.org/routenames/";
+        GsonRequest<RouteName[]> routeNameRequest = new GsonRequest<>(urlRouteName, RouteName[].class, null,
+                new Response.Listener<RouteName[]>() {
+                    @Override
+                    public void onResponse(RouteName[] response) {
+                        if (response != null) {
+                            Collections.addAll(routes, response);
+                            Collections.sort(routes, new Comparator<RouteName>() {
+                                @Override
+                                public int compare(RouteName lhs, RouteName rhs) {
+                                    String aRoute = lhs.getRouteAbbr();
+                                    String bRoute = rhs.getRouteAbbr();
+
+                                    String pattern = "[^0-9]+";
+
+                                    String aRouteClean = aRoute.replaceAll(pattern, "");
+                                    String bRouteClean = bRoute.replaceAll(pattern, "");
+
+                                    int aRouteInt = Integer.parseInt(aRouteClean);
+                                    int bRouteInt = Integer.parseInt(bRouteClean);
+
+                                    return (aRouteInt == bRouteInt) ? 0 : (aRouteInt > bRouteInt) ? 1 : -1;
+                                }
+                            });
+//                            refresh();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        queue.add(routeNameRequest);
     }
 
     @Override
@@ -204,43 +242,7 @@ public class MainActivity extends AppCompatActivity implements
         settings.setMyLocationButtonEnabled(true);
         settings.setZoomControlsEnabled(true);
 
-        String urlRouteName = "http://microapi.theride.org/routenames/";
-        GsonRequest<RouteName[]> routeNameRequest = new GsonRequest<>(urlRouteName, RouteName[].class, null,
-                new Response.Listener<RouteName[]>() {
-                    @Override
-                    public void onResponse(RouteName[] response) {
-                        if (response != null) {
-                            Collections.addAll(routes, response);
-                            Collections.sort(routes, new Comparator<RouteName>() {
-                                @Override
-                                public int compare(RouteName lhs, RouteName rhs) {
-                                    String aRoute = lhs.getRouteAbbr();
-                                    String bRoute = rhs.getRouteAbbr();
-
-                                    String pattern = "[^0-9]+";
-
-                                    String aRouteClean = aRoute.replaceAll(pattern, "");
-                                    String bRouteClean = bRoute.replaceAll(pattern, "");
-
-                                    int aRouteInt = Integer.parseInt(aRouteClean);
-                                    int bRouteInt = Integer.parseInt(bRouteClean);
-
-                                    return (aRouteInt == bRouteInt) ? 0 : (aRouteInt > bRouteInt) ? 1 : -1;
-                                }
-                            });
-                            refresh();
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-
-        queue.add(routeNameRequest);
+        refresh();
     }
 
     @Override
@@ -269,7 +271,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void refresh() {
-        map.clear();
+        if (map != null) {
+            map.clear();
+        }
+
         busMarkerHashMap.clear();
         String savedRouteAbbr = prefs.getString(getString(R.string.saved_route_abbr), "18");
 
