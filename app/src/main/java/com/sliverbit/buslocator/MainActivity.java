@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onResponse(RouteName[] response) {
                         if (response != null) {
+                            routes.clear();
                             Collections.addAll(routes, response);
                             Collections.sort(routes, new Comparator<RouteName>() {
                                 @Override
@@ -124,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements
                                     return (aRouteInt == bRouteInt) ? 0 : (aRouteInt > bRouteInt) ? 1 : -1;
                                 }
                             });
-//                            refresh();
                         }
 
                     }
@@ -313,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements
                 new Response.Listener<Location[]>() {
                     @Override
                     public void onResponse(Location[] response) {
-                        if (response != null) {
+                        if (response != null && response.length > 0) {
                             LatLng busLatLng = null;
                             Marker busMarker = null;
 
@@ -338,6 +339,8 @@ public class MainActivity extends AppCompatActivity implements
                             if (busMarker != null) {
                                 busMarker.showInfoWindow();
                             }
+                        } else {
+                            Toast.makeText(getApplicationContext(), R.string.no_location_data, Toast.LENGTH_SHORT).show();
                         }
                     }
                 },

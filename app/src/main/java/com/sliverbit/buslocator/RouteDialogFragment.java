@@ -63,8 +63,8 @@ public class RouteDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        selectedItem = 0;
         int savedRoute = prefs.getInt(getString(R.string.saved_route_index), 0);
+        selectedItem = savedRoute;
         CharSequence[] items = new CharSequence[routeItems.size()];
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_route)
