@@ -14,6 +14,13 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/busRoute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Route# 18"
+        android:textColor="@color/secondary_text" />
+
+    <TextView
         android:id="@+id/busNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

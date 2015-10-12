@@ -14,7 +14,9 @@ import com.google.android.gms.analytics.Tracker;
 import com.sliverbit.buslocator.models.RouteName;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * BusLocator
@@ -28,6 +30,7 @@ public class RouteDialogFragment extends DialogFragment {
     private SharedPreferences.Editor prefsEditor;
     private List<String> routeItems;
     private int selectedItem;
+    private Set<String> checkedItems;
     private ArrayList<RouteName> routes;
 
     public RouteDialogFragment() {
@@ -64,26 +67,40 @@ public class RouteDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int savedRoute = prefs.getInt(getString(R.string.saved_route_index), 0);
+        Set<String> savedRoutes = prefs.getStringSet(getString(R.string.saved_route_index_set), new HashSet<String>());
+
         selectedItem = savedRoute;
+        checkedItems = savedRoutes;
+
         CharSequence[] items = new CharSequence[routeItems.size()];
+        final boolean[] checkeditems = new boolean[routeItems.size()];
+        for (String savedItemIndex : savedRoutes) {
+            checkeditems[Integer.parseInt(savedItemIndex)] = true;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_route)
-                .setSingleChoiceItems(routeItems.toArray(items), savedRoute, new DialogInterface.OnClickListener() {
+                .setMultiChoiceItems(routeItems.toArray(items), checkeditems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                         selectedItem = which;
-                        tracker.send(new HitBuilders.EventBuilder()
-                                        .setCategory("UX")
-                                        .setAction("click")
-                                        .setLabel(String.valueOf(selectedItem))
-                                        .build()
-                        );
+                        checkeditems[which] = isChecked;
                     }
                 })
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
+                        checkedItems.clear();
+                        for (int i = 0; i < checkeditems.length; i++) {
+                            if (checkeditems[i]) {
+                                checkedItems.add(String.valueOf(i));
+                            }
+                        }
+
                         prefsEditor.putInt(getString(R.string.saved_route_index), selectedItem);
+                        prefsEditor.putStringSet(getString(R.string.saved_route_index_set), checkedItems);
                         prefsEditor.putString(getString(R.string.saved_route_abbr), getRouteAbbr(selectedItem));
+                        prefsEditor.putStringSet(getString(R.string.saved_route_abbr_set), getRouteAbbr(checkedItems));
                         prefsEditor.commit();
 
                         tracker.send(new HitBuilders.EventBuilder()
@@ -116,6 +133,14 @@ public class RouteDialogFragment extends DialogFragment {
 
     private String getRouteAbbr(int savedRouteIndex) {
         return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteAbbr() : "18";
+    }
+
+    private Set<String> getRouteAbbr(Set<String> savedRoutes) {
+        Set<String> results = new HashSet<>();
+        for (String savedRoute : savedRoutes) {
+            results.add(getRouteAbbr(Integer.parseInt(savedRoute)));
+        }
+        return results;
     }
 
     public interface RouteDialogListener {

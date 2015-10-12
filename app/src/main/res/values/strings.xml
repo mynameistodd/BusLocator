@@ -3,7 +3,9 @@
     <string name="action_settings">Settings</string>
     <string name="pick_route">Pick Route</string>
     <string name="saved_route_index">saved_route</string>
+    <string name="saved_route_index_set">saved_route_set</string>
     <string name="saved_route_abbr">saved_route_abbr</string>
+    <string name="saved_route_abbr_set">saved_route_abbr_set</string>
     <string name="banner_ad_unit_id">ca-app-pub-0720096656845056/3833868313</string>
     <string name="no_location_data">Bus location data not found.</string>
 </resources>
