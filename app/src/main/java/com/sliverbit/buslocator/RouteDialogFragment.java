@@ -29,7 +29,6 @@ public class RouteDialogFragment extends DialogFragment {
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefsEditor;
     private List<String> routeItems;
-    private int selectedItem;
     private Set<String> checkedItems;
     private ArrayList<RouteName> routes;
 
@@ -66,10 +65,8 @@ public class RouteDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        int savedRoute = prefs.getInt(getString(R.string.saved_route_index), 0);
         Set<String> savedRoutes = prefs.getStringSet(getString(R.string.saved_route_index_set), new HashSet<String>());
 
-        selectedItem = savedRoute;
         checkedItems = savedRoutes;
 
         CharSequence[] items = new CharSequence[routeItems.size()];
@@ -83,7 +80,6 @@ public class RouteDialogFragment extends DialogFragment {
                 .setMultiChoiceItems(routeItems.toArray(items), checkeditems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        selectedItem = which;
                         checkeditems[which] = isChecked;
                     }
                 })
@@ -97,9 +93,7 @@ public class RouteDialogFragment extends DialogFragment {
                             }
                         }
 
-                        prefsEditor.putInt(getString(R.string.saved_route_index), selectedItem);
                         prefsEditor.putStringSet(getString(R.string.saved_route_index_set), checkedItems);
-                        prefsEditor.putString(getString(R.string.saved_route_abbr), getRouteAbbr(selectedItem));
                         prefsEditor.putStringSet(getString(R.string.saved_route_abbr_set), getRouteAbbr(checkedItems));
                         prefsEditor.commit();
 

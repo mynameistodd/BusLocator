@@ -1,11 +1,16 @@
 package com.sliverbit.buslocator;
 
+import android.Manifest;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private Tracker tracker;
     private ArrayList<RouteName> routes;
     private SharedPreferences prefs;
@@ -78,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("13B98EF3B50AA98DCC1635C4B610F34E")
+                .addTestDevice(getString(R.string.test_device_id))
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -143,6 +149,25 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay!
+                    map.setMyLocationEnabled(true);
+                    googleApiClient.reconnect();
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                break;
+        }
+    }
+
+    @Override
     protected void onStop() {
         googleApiClient.disconnect();
         super.onStop();
@@ -156,8 +181,10 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        String savedRouteAbbr = prefs.getString(getString(R.string.saved_route_abbr), "18");
-        menu.findItem(R.id.action_route).setTitle("Route " + savedRouteAbbr);
+        Set<String> savedRouteAbbrSet = prefs.getStringSet(getString(R.string.saved_route_abbr_set), new HashSet<String>() {{
+            add("18");
+        }});
+        menu.findItem(R.id.action_route).setTitle("Routes " + TextUtils.join(",", savedRouteAbbrSet));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -188,8 +215,6 @@ public class MainActivity extends AppCompatActivity implements
                 );
                 refresh();
                 return true;
-//            case R.id.action_settings:
-//                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -199,7 +224,11 @@ public class MainActivity extends AppCompatActivity implements
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        map.setMyLocationEnabled(true);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+        } else {
+            map.setMyLocationEnabled(true);
+        }
 
         map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
