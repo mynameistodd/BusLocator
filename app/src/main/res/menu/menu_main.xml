@@ -5,13 +5,16 @@
         android:id="@+id/action_route"
         android:orderInCategory="100"
         android:title="Pick Route"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_refresh"
         android:icon="@mipmap/ic_action_reload"
         android:orderInCategory="200"
         android:title="Refresh"
-        app:showAsAction="always" />
-    <!--<item android:id="@+id/action_settings" android:title="@string/action_settings"-->
-    <!--android:orderInCategory="300" app:showAsAction="never" />-->
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="300"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 </menu>

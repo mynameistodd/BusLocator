@@ -2,11 +2,13 @@ package com.sliverbit.buslocator;
 
 import android.Manifest;
 import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleMap map;
     private RequestQueue queue;
     private HashMap<String, Location> busMarkerHashMap;
+    private AdView adView;
+    private AdRequest adRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,16 +81,17 @@ public class MainActivity extends AppCompatActivity implements
         BusLocatorApplication application = (BusLocatorApplication) getApplication();
         tracker = application.getDefaultTracker();
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         prefs = getPreferences(Context.MODE_PRIVATE);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
+        adView = (AdView) findViewById(R.id.adView);
+        adRequest = new AdRequest.Builder()
                 .addTestDevice(getString(R.string.test_device_id))
                 .build();
-        mAdView.loadAd(adRequest);
+        adView.loadAd(adRequest);
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -184,7 +189,11 @@ public class MainActivity extends AppCompatActivity implements
         Set<String> savedRouteAbbrSet = prefs.getStringSet(getString(R.string.saved_route_abbr_set), new HashSet<String>() {{
             add("18");
         }});
-        menu.findItem(R.id.action_route).setTitle("Routes " + TextUtils.join(",", savedRouteAbbrSet));
+        MenuItem item = menu.findItem(R.id.action_route);
+        if (item != null) {
+            item.setTitle("Routes " + TextUtils.join(",", savedRouteAbbrSet));
+        }
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -215,9 +224,25 @@ public class MainActivity extends AppCompatActivity implements
                 );
                 refresh();
                 return true;
+            case R.id.action_settings:
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, new SettingsFragment())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .commit();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() != 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

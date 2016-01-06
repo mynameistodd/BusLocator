@@ -1,10 +1,27 @@
 <resources>
     <string name="app_name">Bus Locator</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">About</string>
     <string name="pick_route">Pick Routes</string>
     <string name="saved_route_index_set">saved_route_set</string>
     <string name="saved_route_abbr_set">saved_route_abbr_set</string>
     <string name="banner_ad_unit_id">ca-app-pub-0720096656845056/3833868313</string>
     <string name="no_location_data">Bus location data not found.</string>
     <string name="test_device_id">F2455D8A50059EF7768957A57E5357E3</string>
+
+    <!--<string name="pref_category_general">General</string>-->
+    <string name="pref_category_about">About</string>
+
+    <!--<string name="pref_auto_update_key">pref_auto_update</string>-->
+    <!--<string name="pref_auto_update_default">false</string>-->
+    <!--<string name="pref_auto_update_title">Auto Update Dictionary</string>-->
+    <!--<string name="pref_auto_update_summary">Add new terms after app updates</string>-->
+
+    <string name="pref_web_page">Developer Website</string>
+    <string name="pref_web_page_url">http://www.todddeland.com</string>
+
+    <string name="pref_legal">AAATA Terms of Use</string>
+    <string name="pref_legal_text">Transit scheduling, geographic, and real-time data provided by permission of AAATA/TheRide</string>
+
+    <string name="pref_version_key">pref_version</string>
+    <string name="pref_version">Version</string>
 </resources>
