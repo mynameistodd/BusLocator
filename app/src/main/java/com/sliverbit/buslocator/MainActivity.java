@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    private static final String TAG_MAP_FRAGMENT = "mapFragment";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private Tracker tracker;
     private ArrayList<RouteName> routes;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements
     private HashMap<String, Location> busMarkerHashMap;
     private AdView adView;
     private AdRequest adRequest;
+    private MapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +80,23 @@ public class MainActivity extends AppCompatActivity implements
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState == null) {
+            mapFragment = MapFragment.newInstance();
+
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, mapFragment, TAG_MAP_FRAGMENT)
+                    .commit();
+        } else {
+            mapFragment = (MapFragment) getFragmentManager().findFragmentByTag(TAG_MAP_FRAGMENT);
+        }
+
+        mapFragment.getMapAsync(this);
+
         BusLocatorApplication application = (BusLocatorApplication) getApplication();
         tracker = application.getDefaultTracker();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         prefs = getPreferences(Context.MODE_PRIVATE);
-
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         adView = (AdView) findViewById(R.id.adView);
         adRequest = new AdRequest.Builder()
@@ -308,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onConnected(Bundle connectionHint) {
         android.location.Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 googleApiClient);
-        if (lastLocation != null) {
+        if (lastLocation != null && map != null) {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 14));
         }
     }
