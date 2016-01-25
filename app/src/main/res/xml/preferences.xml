@@ -15,7 +15,11 @@
         </Preference>
         <Preference
             android:summary="@string/pref_legal_text"
-            android:title="@string/pref_legal" />
+            android:title="@string/pref_legal">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/pref_legal_web_page_url" />
+        </Preference>
         <Preference
             android:key="@string/pref_version_key"
             android:title="@string/pref_version" />
