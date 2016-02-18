@@ -20,6 +20,13 @@
     <string name="pref_web_page">Developer Website</string>
     <string name="pref_web_page_url">http://www.todddeland.com</string>
 
+    <string name="pref_email_developer_key">pref_email_developer_key</string>
+    <string name="pref_email_developer">Contact Developer</string>
+    <string name="pref_email_developer_subject">Feedback from Bus Locator</string>
+    <string-array name="pref_email_developer_addresses">
+        <item>todd@sliverbit.com</item>
+    </string-array>
+
     <string name="pref_legal">AAATA Terms of Use</string>
     <string name="pref_legal_text">Transit scheduling, geographic, and real-time data provided by permission of AAATA/TheRide</string>
     <string name="pref_legal_web_page_url">http://www.theride.org/</string>

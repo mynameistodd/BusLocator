@@ -8,6 +8,9 @@
     <!--android:title="@string/pref_auto_update_title" />-->
     <!--</PreferenceCategory>-->
     <PreferenceCategory android:title="@string/pref_category_about">
+        <Preference
+            android:key="@string/pref_email_developer_key"
+            android:title="@string/pref_email_developer"></Preference>
         <Preference android:title="@string/pref_web_page">
             <intent
                 android:action="android.intent.action.VIEW"

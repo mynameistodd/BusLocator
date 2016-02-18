@@ -1,5 +1,7 @@
 package com.sliverbit.buslocator;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -22,6 +24,21 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         addPreferencesFromResource(R.xml.preferences);
+
+        Preference contactDeveloper = findPreference(getString(R.string.pref_email_developer_key));
+        contactDeveloper.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_EMAIL, getResources().getStringArray(R.array.pref_email_developer_addresses));
+                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.pref_email_developer_subject));
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+                return true;
+            }
+        });
 
         Preference versionPref = findPreference(getString(R.string.pref_version_key));
         versionPref.setSummary(BuildConfig.VERSION_NAME);
