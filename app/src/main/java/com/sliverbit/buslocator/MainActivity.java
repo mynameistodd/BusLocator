@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -216,11 +217,15 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (id) {
             case R.id.action_route:
-                Bundle args = new Bundle();
-                args.putParcelableArrayList("routes", routes);
-                DialogFragment routeDialogFragment = new RouteDialogFragment();
-                routeDialogFragment.setArguments(args);
-                routeDialogFragment.show(getFragmentManager(), "routeFragment");
+                if (routes != null && routes.size() > 0) {
+                    Bundle args = new Bundle();
+                    args.putParcelableArrayList("routes", routes);
+                    DialogFragment routeDialogFragment = new RouteDialogFragment();
+                    routeDialogFragment.setArguments(args);
+                    routeDialogFragment.show(getFragmentManager(), "routeFragment");
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
+                }
                 tracker.send(new HitBuilders.EventBuilder()
                                 .setCategory("UX")
                                 .setAction("click")
@@ -383,6 +388,7 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
+                            Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -424,6 +430,7 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
+                            Toast.makeText(getApplicationContext(), R.string.no_location_data, Toast.LENGTH_SHORT).show();
                         }
                     });
 
