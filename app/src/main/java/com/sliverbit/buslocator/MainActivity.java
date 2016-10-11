@@ -42,18 +42,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.sliverbit.buslocator.models.BustimeResponse;
 import com.sliverbit.buslocator.models.Location;
-import com.sliverbit.buslocator.models.RouteName;
+import com.sliverbit.buslocator.models.Route;
 import com.sliverbit.buslocator.models.StopsOnRoute;
+import com.sliverbit.buslocator.service.BusTimeService;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import io.fabric.sdk.android.Fabric;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -62,10 +66,11 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    private static final String API_KEY = "sg4ttUThYrqW8xnZU43Pebs25";
     private static final String TAG_MAP_FRAGMENT = "mapFragment";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private Tracker tracker;
-    private ArrayList<RouteName> routes;
+    private ArrayList<Route> routes;
     private SharedPreferences prefs;
     private GoogleApiClient googleApiClient;
     private GoogleMap map;
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements
     private AdView adView;
     private AdRequest adRequest;
     private MapFragment mapFragment;
+    private BusTimeService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +121,13 @@ public class MainActivity extends AppCompatActivity implements
         queue = Volley.newRequestQueue(this);
         busMarkerHashMap = new HashMap<>();
         routes = new ArrayList<>();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://rt.theride.org")
+                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .build();
+
+        service = retrofit.create(BusTimeService.class);
     }
 
     @Override
@@ -127,44 +140,22 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        String urlRouteName = "http://microapi.theride.org/routenames/";
-        GsonRequest<RouteName[]> routeNameRequest = new GsonRequest<>(urlRouteName, RouteName[].class, null,
-                new Response.Listener<RouteName[]>() {
-                    @Override
-                    public void onResponse(RouteName[] response) {
-                        if (response != null) {
-                            routes.clear();
-                            Collections.addAll(routes, response);
-                            Collections.sort(routes, new Comparator<RouteName>() {
-                                @Override
-                                public int compare(RouteName lhs, RouteName rhs) {
-                                    String aRoute = lhs.getRouteAbbr();
-                                    String bRoute = rhs.getRouteAbbr();
+        Call<BustimeResponse> retroRoutes = service.getRoutes(API_KEY);
+        retroRoutes.enqueue(new Callback<BustimeResponse>() {
+            @Override
+            public void onResponse(Call<BustimeResponse> call, retrofit2.Response<BustimeResponse> response) {
+                BustimeResponse bustimeResponse = response.body();
+                routes.clear();
+                for (Route route : bustimeResponse.getRoute()) {
+                    routes.add(route);
+                }
+            }
 
-                                    String pattern = "[^0-9]+";
+            @Override
+            public void onFailure(Call<BustimeResponse> call, Throwable t) {
 
-                                    String aRouteClean = aRoute.replaceAll(pattern, "");
-                                    String bRouteClean = bRoute.replaceAll(pattern, "");
-
-                                    int aRouteInt = Integer.parseInt(aRouteClean);
-                                    int bRouteInt = Integer.parseInt(bRouteClean);
-
-                                    return (aRouteInt == bRouteInt) ? 0 : (aRouteInt > bRouteInt) ? 1 : -1;
-                                }
-                            });
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        queue.add(routeNameRequest);
+            }
+        });
     }
 
     @Override

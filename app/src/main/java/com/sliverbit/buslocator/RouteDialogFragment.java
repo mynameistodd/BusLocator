@@ -11,7 +11,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.sliverbit.buslocator.models.RouteName;
+import com.sliverbit.buslocator.models.Route;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,7 +30,7 @@ public class RouteDialogFragment extends DialogFragment {
     private SharedPreferences.Editor prefsEditor;
     private List<String> routeItems;
     private Set<String> checkedItems;
-    private ArrayList<RouteName> routes;
+    private ArrayList<Route> routes;
 
     public RouteDialogFragment() {
     }
@@ -56,8 +56,8 @@ public class RouteDialogFragment extends DialogFragment {
         Bundle args = getArguments();
         routes = args.getParcelableArrayList("routes");
         List<String> temp = new ArrayList<>();
-        for (RouteName routeName : routes) {
-            temp.add(routeName.getRouteAbbr() + " - " + routeName.getName());
+        for (Route routeName : routes) {
+            temp.add(routeName.getRouteDisplay() + " - " + routeName.getRouteName());
         }
 
         this.routeItems = temp;
@@ -126,7 +126,7 @@ public class RouteDialogFragment extends DialogFragment {
     }
 
     private String getRouteAbbr(int savedRouteIndex) {
-        return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteAbbr() : "18";
+        return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteDisplay() : "18";
     }
 
     private Set<String> getRouteAbbr(Set<String> savedRoutes) {
