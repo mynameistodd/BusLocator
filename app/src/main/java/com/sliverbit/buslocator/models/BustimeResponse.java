@@ -16,13 +16,13 @@ public class BustimeResponse {
     @ElementList(required = false)
     private List<String> dir;
 
-    @ElementList(required = false)
-    private List<Ptr> ptr;
+    @ElementList(name = "ptr", required = false, inline = true)
+    private List<Pattern> pattern;
 
     @ElementList(required = false)
     private List<Prediction> prd;
 
-    @ElementList(name = "route", inline = true)
+    @ElementList(name = "route", required = false, inline = true)
     private List<Route> route;
 
     @ElementList(required = false)
@@ -54,11 +54,11 @@ public class BustimeResponse {
         return this.dir;
     }
 
-    public List<Ptr> getPtr() {
-        if (ptr == null) {
-            ptr = new ArrayList<Ptr>();
+    public List<Pattern> getPattern() {
+        if (pattern == null) {
+            pattern = new ArrayList<Pattern>();
         }
-        return this.ptr;
+        return this.pattern;
     }
 
     public List<Prediction> getPrd() {

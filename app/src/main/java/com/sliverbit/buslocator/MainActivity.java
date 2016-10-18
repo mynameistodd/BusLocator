@@ -44,8 +44,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sliverbit.buslocator.models.BustimeResponse;
 import com.sliverbit.buslocator.models.Location;
+import com.sliverbit.buslocator.models.Pattern;
+import com.sliverbit.buslocator.models.Point;
 import com.sliverbit.buslocator.models.Route;
-import com.sliverbit.buslocator.models.StopsOnRoute;
 import com.sliverbit.buslocator.service.BusTimeService;
 
 import java.util.ArrayList;
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onFailure(Call<BustimeResponse> call, Throwable t) {
-
+                t.printStackTrace();
             }
         });
     }
@@ -345,43 +346,45 @@ public class MainActivity extends AppCompatActivity implements
 
         busMarkerHashMap.clear();
 
-        //String savedRouteAbbr = prefs.getString(getString(R.string.saved_route_abbr), "18");
         Set<String> savedRouteAbbrSet = prefs.getStringSet(getString(R.string.saved_route_abbr_set), new HashSet<String>() {{
             add("18");
         }});
 
         for (String savedRouteAbbr : savedRouteAbbrSet) {
-            String urlStopsRoute = "http://microapi.theride.org/StopsOnRoute/" + savedRouteAbbr;
             String urlLocation = "http://microapi.theride.org/Location/" + savedRouteAbbr;
 
-            GsonRequest<StopsOnRoute[]> routeRequest = new GsonRequest<>(urlStopsRoute, StopsOnRoute[].class, null,
-                    new Response.Listener<StopsOnRoute[]>() {
-                        @Override
-                        public void onResponse(StopsOnRoute[] response) {
-                            if (response != null) {
-                                PolylineOptions lineOptions = new PolylineOptions();
-                                lineOptions.color(Color.BLUE);
+            Call<BustimeResponse> retroPatterns = service.getPatterns(API_KEY, savedRouteAbbr);
+            retroPatterns.enqueue(new Callback<BustimeResponse>() {
+                @Override
+                public void onResponse(Call<BustimeResponse> call, retrofit2.Response<BustimeResponse> response) {
+                    BustimeResponse bustimeResponse = response.body();
 
-                                for (StopsOnRoute busLocation : response) {
-                                    String lat = busLocation.getLattitude();
-                                    String lng = busLocation.getLongitude();
+                    PolylineOptions lineOptions = new PolylineOptions();
+                    lineOptions.color(Color.BLUE);
 
-                                    LatLng busLatLng = new LatLng(Double.valueOf(lat), Double.valueOf(lng));
+                    for (Pattern routePattern : bustimeResponse.getPattern()) {
+                        for (Point point : routePattern.getPoint()) {
+                            Double lat = point.getLat();
+                            Double lng = point.getLon();
 
-                                    lineOptions.add(busLatLng);
-                                }
+                            LatLng latLngPoint = new LatLng(lat, lng);
 
-                                map.addPolyline(lineOptions);
-                            }
+                            lineOptions.add(latLngPoint);
                         }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            error.printStackTrace();
-                            Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    }
+
+                    map.addPolyline(lineOptions);
+                }
+
+                @Override
+                public void onFailure(Call<BustimeResponse> call, Throwable t) {
+                    t.printStackTrace();
+                    Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+
 
             GsonRequest<Location[]> locationRequest = new GsonRequest<>(urlLocation, Location[].class, null,
                     new Response.Listener<Location[]>() {
@@ -425,7 +428,6 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     });
 
-            queue.add(routeRequest);
             queue.add(locationRequest);
         }
     }

@@ -3,28 +3,28 @@ package com.sliverbit.buslocator.models;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-@Root
-public class Pt {
+@Root(name = "pt")
+public class Point {
 
-    @Element
+    @Element(required = false)
     private int seq;
 
-    @Element
+    @Element(required = false)
     private String typ;
 
-    @Element
+    @Element(required = false)
     private Integer stpid;
 
-    @Element
+    @Element(required = false)
     private String stpnm;
 
-    @Element
+    @Element(required = false)
     private Float pdist;
 
-    @Element
+    @Element(required = false)
     private double lat;
 
-    @Element
+    @Element(required = false)
     private double lon;
 
     public int getSeq() {
