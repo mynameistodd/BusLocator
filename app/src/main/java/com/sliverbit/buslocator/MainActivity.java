@@ -19,10 +19,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.ads.AdRequest;
@@ -43,10 +39,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sliverbit.buslocator.models.BustimeResponse;
-import com.sliverbit.buslocator.models.Location;
 import com.sliverbit.buslocator.models.Pattern;
 import com.sliverbit.buslocator.models.Point;
 import com.sliverbit.buslocator.models.Route;
+import com.sliverbit.buslocator.models.Vehicle;
 import com.sliverbit.buslocator.service.BusTimeService;
 
 import java.util.ArrayList;
@@ -75,8 +71,8 @@ public class MainActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private GoogleApiClient googleApiClient;
     private GoogleMap map;
-    private RequestQueue queue;
-    private HashMap<String, Location> busMarkerHashMap;
+    //    private RequestQueue queue;
+    private HashMap<String, Vehicle> busMarkerHashMap;
     private AdView adView;
     private AdRequest adRequest;
     private MapFragment mapFragment;
@@ -119,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements
                 .addApi(LocationServices.API)
                 .build();
 
-        queue = Volley.newRequestQueue(this);
+//        queue = Volley.newRequestQueue(this);
         busMarkerHashMap = new HashMap<>();
         routes = new ArrayList<>();
 
@@ -146,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onResponse(Call<BustimeResponse> call, retrofit2.Response<BustimeResponse> response) {
                 BustimeResponse bustimeResponse = response.body();
+
                 routes.clear();
                 for (Route route : bustimeResponse.getRoute()) {
                     routes.add(route);
@@ -155,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<BustimeResponse> call, Throwable t) {
                 t.printStackTrace();
+                Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -279,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 View busInfoWindow = getLayoutInflater().inflate(R.layout.bus_info_window, null);
 
-                Location busLocation = busMarkerHashMap.get(marker.getId());
+                Vehicle busLocation = busMarkerHashMap.get(marker.getId());
 
                 TextView busAdherence = (TextView) busInfoWindow.findViewById(R.id.busAdherence);
                 TextView busRoute = (TextView) busInfoWindow.findViewById(R.id.busRoute);
@@ -287,17 +285,17 @@ public class MainActivity extends AppCompatActivity implements
                 TextView busUpdated = (TextView) busInfoWindow.findViewById(R.id.busUpdated);
                 TextView busDirection = (TextView) busInfoWindow.findViewById(R.id.busDirection);
 
-                busAdherence.setText(busLocation.getAdherenceText());
-                busRoute.setText("Route# " + busLocation.getRouteAbbr());
-                busNum.setText("Bus# " + busLocation.getBusNum());
-                busUpdated.setText("Updated: " + busLocation.getTimestamp());
-                busDirection.setText("Direction: " + busLocation.getRouteDirection());
+                busAdherence.setText(busLocation.getDes());
+                busRoute.setText("Route# " + busLocation.getRt());
+                busNum.setText("Bus# " + busLocation.getVid());
+                busUpdated.setText("Updated: " + busLocation.getTmstmp());
+                busDirection.setText("Direction: " + busLocation.getDes());
 
-                if (busLocation.getAdherence() > 0) {
-                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-                } else if (busLocation.getAdherence() < 0) {
-                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                }
+//                if (busLocation.getAdherence() > 0) {
+//                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+//                } else if (busLocation.getAdherence() < 0) {
+//                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+//                }
 
                 return busInfoWindow;
             }
@@ -351,7 +349,6 @@ public class MainActivity extends AppCompatActivity implements
         }});
 
         for (String savedRouteAbbr : savedRouteAbbrSet) {
-            String urlLocation = "http://microapi.theride.org/Location/" + savedRouteAbbr;
 
             Call<BustimeResponse> retroPatterns = service.getPatterns(API_KEY, savedRouteAbbr);
             retroPatterns.enqueue(new Callback<BustimeResponse>() {
@@ -384,51 +381,44 @@ public class MainActivity extends AppCompatActivity implements
             });
 
 
+            Call<BustimeResponse> retroLocations = service.getVehicles(API_KEY, savedRouteAbbr);
+            retroLocations.enqueue(new Callback<BustimeResponse>() {
+                @Override
+                public void onResponse(Call<BustimeResponse> call, retrofit2.Response<BustimeResponse> response) {
+                    BustimeResponse bustimeResponse = response.body();
 
+                    LatLng busLatLng = null;
+                    Marker busMarker = null;
 
-            GsonRequest<Location[]> locationRequest = new GsonRequest<>(urlLocation, Location[].class, null,
-                    new Response.Listener<Location[]>() {
-                        @Override
-                        public void onResponse(Location[] response) {
-                            if (response != null && response.length > 0) {
-                                LatLng busLatLng = null;
-                                Marker busMarker = null;
+                    for (Vehicle busLocation : bustimeResponse.getVehicle()) {
+                        Double lat = busLocation.getLat();
+                        Double lng = busLocation.getLon();
 
-                                for (Location busLocation : response) {
-                                    String lat = busLocation.getLat();
-                                    String lng = busLocation.getLongitude();
+                        busLatLng = new LatLng(lat, lng);
 
-                                    busLatLng = new LatLng(Double.valueOf(lat), Double.valueOf(lng));
+                        busMarker = map.addMarker(new MarkerOptions()
+                                .position(busLatLng)
+                                .title(busLocation.getDes())
+                                .snippet("Bus# " + busLocation.getVid() + " Updated: " + busLocation.getTmstmp())
+                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_action_bus)));
 
-                                    busMarker = map.addMarker(new MarkerOptions()
-                                            .position(busLatLng)
-                                            .title(busLocation.getAdherenceText())
-                                            .snippet("Bus# " + busLocation.getBusNum() + " Updated: " + busLocation.getTimestamp())
-                                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_action_bus)));
+                        busMarkerHashMap.put(busMarker.getId(), busLocation);
+                    }
 
-                                    busMarkerHashMap.put(busMarker.getId(), busLocation);
-                                }
+//                    if (busLatLng != null) {
+//                        map.animateCamera(CameraUpdateFactory.newLatLng(busLatLng));
+//                    }
+//                    if (busMarker != null) {
+//                        busMarker.showInfoWindow();
+//                    }
+                }
 
-                                if (busLatLng != null) {
-                                    map.animateCamera(CameraUpdateFactory.newLatLng(busLatLng));
-                                }
-                                if (busMarker != null) {
-                                    busMarker.showInfoWindow();
-                                }
-                            } else {
-                                Toast.makeText(getApplicationContext(), R.string.no_location_data, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            error.printStackTrace();
-                            Toast.makeText(getApplicationContext(), R.string.no_location_data, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-            queue.add(locationRequest);
+                @Override
+                public void onFailure(Call<BustimeResponse> call, Throwable t) {
+                    t.printStackTrace();
+                    Toast.makeText(getApplicationContext(), R.string.no_location_data, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }

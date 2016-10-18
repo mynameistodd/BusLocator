@@ -3,55 +3,55 @@ package com.sliverbit.buslocator.models;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-@Root
+@Root(name = "vehicle")
 public class Vehicle {
 
-    @Element
+    @Element(required = false)
     private String vid;
 
-    @Element
-    private String tmpstmp;
+    @Element(required = false)
+    private String tmstmp;
 
-    @Element
+    @Element(required = false)
     private double lat;
 
-    @Element
+    @Element(required = false)
     private double lon;
 
-    @Element
+    @Element(required = false)
     private int hdg;
 
-    @Element
+    @Element(required = false)
     private int pid;
 
-    @Element
+    @Element(required = false)
     private int pdist;
 
-    @Element
+    @Element(required = false)
     private String rt;
 
-    @Element
+    @Element(required = false)
     private String des;
 
-    @Element
+    @Element(required = false)
     private boolean dly;
 
-    @Element
+    @Element(required = false)
     private String srvtmstmp;
 
-    @Element
+    @Element(required = false)
     private int spd;
 
-    @Element
+    @Element(required = false)
     private Integer blk;
 
-    @Element
+    @Element(required = false)
     private String tablockid;
 
-    @Element
+    @Element(required = false)
     private String tatripid;
 
-    @Element
+    @Element(required = false)
     private String zone;
 
     public String getVid() {
@@ -62,12 +62,12 @@ public class Vehicle {
         this.vid = value;
     }
 
-    public String getTmpstmp() {
-        return tmpstmp;
+    public String getTmstmp() {
+        return tmstmp;
     }
 
-    public void setTmpstmp(String value) {
-        this.tmpstmp = value;
+    public void setTmstmp(String value) {
+        this.tmstmp = value;
     }
 
     public double getLat() {

@@ -34,7 +34,7 @@ public class BustimeResponse {
     @Element(required = false)
     private String tm;
 
-    @ElementList(required = false)
+    @ElementList(name = "vehicle", required = false, inline = true)
     private List<Vehicle> vehicle;
 
     public BustimeResponse() {
