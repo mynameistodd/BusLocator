@@ -19,8 +19,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.HitBuilders;
@@ -50,7 +48,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -71,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements
     private SharedPreferences prefs;
     private GoogleApiClient googleApiClient;
     private GoogleMap map;
-    //    private RequestQueue queue;
     private HashMap<String, Vehicle> busMarkerHashMap;
     private AdView adView;
     private AdRequest adRequest;
@@ -81,8 +77,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
-        Fabric.with(this, new Answers());
+
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
@@ -115,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements
                 .addApi(LocationServices.API)
                 .build();
 
-//        queue = Volley.newRequestQueue(this);
         busMarkerHashMap = new HashMap<>();
         routes = new ArrayList<>();
 
@@ -191,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         Set<String> savedRouteAbbrSet = prefs.getStringSet(getString(R.string.saved_route_abbr_set), new HashSet<String>() {{
-            add("18");
+            add("32");
         }});
         MenuItem item = menu.findItem(R.id.action_route);
         if (item != null) {
@@ -345,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements
         busMarkerHashMap.clear();
 
         Set<String> savedRouteAbbrSet = prefs.getStringSet(getString(R.string.saved_route_abbr_set), new HashSet<String>() {{
-            add("18");
+            add("32");
         }});
 
         for (String savedRouteAbbr : savedRouteAbbrSet) {
