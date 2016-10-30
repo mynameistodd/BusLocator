@@ -21,8 +21,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.sliverbit.buslocator.models.BustimeResponse;
 import com.sliverbit.buslocator.models.Pattern;
 import com.sliverbit.buslocator.models.Point;
@@ -60,10 +59,13 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    private static final String SELECT_REFRESH = "select_refresh";
+
     private static final String API_KEY = "sg4ttUThYrqW8xnZU43Pebs25";
     private static final String TAG_MAP_FRAGMENT = "mapFragment";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
-    private Tracker tracker;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
     private ArrayList<Route> routes;
     private SharedPreferences prefs;
     private GoogleApiClient googleApiClient;
@@ -92,8 +94,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mapFragment.getMapAsync(this);
 
-        BusLocatorApplication application = (BusLocatorApplication) getApplication();
-        tracker = application.getDefaultTracker();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         prefs = getPreferences(Context.MODE_PRIVATE);
@@ -210,20 +211,12 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
                 }
-                tracker.send(new HitBuilders.EventBuilder()
-                                .setCategory("UX")
-                                .setAction("click")
-                                .setLabel("route picker")
-                                .build()
-                );
                 return true;
             case R.id.action_refresh:
-                tracker.send(new HitBuilders.EventBuilder()
-                                .setCategory("UX")
-                                .setAction("click")
-                                .setLabel("refresh")
-                                .build()
-                );
+                Bundle bundle = new Bundle();
+                bundle.putString("action", "click");
+                mFirebaseAnalytics.logEvent(SELECT_REFRESH, bundle);
+
                 refresh();
                 return true;
             case R.id.action_settings:

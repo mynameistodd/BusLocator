@@ -11,13 +11,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
-
 public class SettingsFragment extends PreferenceFragment {
-
-    public static GoogleAnalytics analytics;
-    public static Tracker tracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,8 +41,6 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onStart() {
         super.onStart();
-        analytics = GoogleAnalytics.getInstance(getActivity());
-        tracker = analytics.newTracker(R.xml.global_tracker);
     }
 
     @Override

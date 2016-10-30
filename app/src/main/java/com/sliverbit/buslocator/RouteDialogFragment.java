@@ -9,8 +9,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.sliverbit.buslocator.models.Route;
 
 import java.util.ArrayList;
@@ -24,7 +23,10 @@ import java.util.Set;
  */
 public class RouteDialogFragment extends DialogFragment {
 
-    private Tracker tracker;
+    private static final String SELECT_OK = "select_ok";
+    private static final String SELECT_CANCEL = "select_cancel";
+
+    private FirebaseAnalytics mFirebaseAnalytics;
     private RouteDialogListener listener;
     private SharedPreferences prefs;
     private SharedPreferences.Editor prefsEditor;
@@ -50,8 +52,7 @@ public class RouteDialogFragment extends DialogFragment {
         prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
         prefsEditor = prefs.edit();
 
-        BusLocatorApplication application = (BusLocatorApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
 
         Bundle args = getArguments();
         routes = args.getParcelableArrayList("routes");
@@ -97,22 +98,16 @@ public class RouteDialogFragment extends DialogFragment {
                         prefsEditor.putStringSet(getString(R.string.saved_route_abbr_set), getRouteAbbr(checkedItems));
                         prefsEditor.commit();
 
-                        tracker.send(new HitBuilders.EventBuilder()
-                                        .setCategory("UX")
-                                        .setAction("click")
-                                        .setLabel(getString(android.R.string.ok))
-                                        .build()
-                        );
+                        Bundle bundle = new Bundle();
+                        bundle.putStringArray("routes", getRouteAbbr(checkedItems).toArray(new String[checkedItems.size()]));
+                        mFirebaseAnalytics.logEvent(SELECT_OK, bundle);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        tracker.send(new HitBuilders.EventBuilder()
-                                        .setCategory("UX")
-                                        .setAction("click")
-                                        .setLabel(getString(android.R.string.cancel))
-                                        .build()
-                        );
+                        Bundle bundle = new Bundle();
+                        bundle.putStringArray("routes", getRouteAbbr(checkedItems).toArray(new String[checkedItems.size()]));
+                        mFirebaseAnalytics.logEvent(SELECT_CANCEL, bundle);
                     }
                 });
 
@@ -126,7 +121,7 @@ public class RouteDialogFragment extends DialogFragment {
     }
 
     private String getRouteAbbr(int savedRouteIndex) {
-        return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteDisplay() : "18";
+        return (routes.size() > 0) ? routes.get(savedRouteIndex).getRouteDisplay() : "32";
     }
 
     private Set<String> getRouteAbbr(Set<String> savedRoutes) {
