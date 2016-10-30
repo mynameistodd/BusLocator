@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleMap map;
     private HashMap<String, Vehicle> busMarkerHashMap;
     private AdView adView;
-    private AdRequest adRequest;
     private MapFragment mapFragment;
     private BusTimeService service;
 
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements
         prefs = getPreferences(Context.MODE_PRIVATE);
 
         adView = (AdView) findViewById(R.id.adView);
-        adRequest = new AdRequest.Builder()
+        AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(getString(R.string.test_device_id))
                 .build();
         adView.loadAd(adRequest);
