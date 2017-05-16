@@ -33,4 +33,11 @@
 
     <string name="pref_version_key">pref_version</string>
     <string name="pref_version">Version</string>
+
+    <string name="bus_onTime">On Time</string>
+    <string name="bus_delayed">Delayed</string>
+    <string name="bus_route">Route#: %1$s</string>
+    <string name="bus_number">Bus#: %1$s</string>
+    <string name="bus_updated">Last Reported: %1$s</string>
+    <string name="bus_direction">Direction: %1$s</string>
 </resources>

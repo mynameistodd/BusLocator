@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,9 +43,14 @@ import com.sliverbit.buslocator.models.Route;
 import com.sliverbit.buslocator.models.Vehicle;
 import com.sliverbit.buslocator.service.BusTimeService;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import retrofit2.Call;
@@ -74,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements
     private AdView adView;
     private MapFragment mapFragment;
     private BusTimeService service;
+    private SimpleDateFormat simpleDateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         service = retrofit.create(BusTimeService.class);
+
+        simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm", Locale.getDefault());
     }
 
     @Override
@@ -263,25 +272,33 @@ public class MainActivity extends AppCompatActivity implements
 
                 View busInfoWindow = getLayoutInflater().inflate(R.layout.bus_info_window, null);
 
-                Vehicle busLocation = busMarkerHashMap.get(marker.getId());
-
                 TextView busAdherence = (TextView) busInfoWindow.findViewById(R.id.busAdherence);
                 TextView busRoute = (TextView) busInfoWindow.findViewById(R.id.busRoute);
                 TextView busNum = (TextView) busInfoWindow.findViewById(R.id.busNum);
                 TextView busUpdated = (TextView) busInfoWindow.findViewById(R.id.busUpdated);
                 TextView busDirection = (TextView) busInfoWindow.findViewById(R.id.busDirection);
 
-                busAdherence.setText(busLocation.getDes());
-                busRoute.setText("Route# " + busLocation.getRt());
-                busNum.setText("Bus# " + busLocation.getVid());
-                busUpdated.setText("Updated: " + busLocation.getTmstmp());
-                busDirection.setText("Direction: " + busLocation.getDes());
+                Vehicle busLocation = busMarkerHashMap.get(marker.getId());
 
-//                if (busLocation.getAdherence() > 0) {
-//                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-//                } else if (busLocation.getAdherence() < 0) {
-//                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-//                }
+                Date lastUpdatedDate = Calendar.getInstance().getTime();
+                try {
+                    lastUpdatedDate = simpleDateFormat.parse(busLocation.getTmstmp());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if (!busLocation.isDly()) {
+                    busAdherence.setText(getString(R.string.bus_onTime));
+                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                } else {
+                    busAdherence.setText(getString(R.string.bus_delayed));
+                    busAdherence.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                }
+
+                busRoute.setText(getString(R.string.bus_route, busLocation.getRt()));
+                busNum.setText(getString(R.string.bus_number, busLocation.getVid()));
+                busUpdated.setText(getString(R.string.bus_updated, DateUtils.getRelativeTimeSpanString(lastUpdatedDate.getTime(), Calendar.getInstance().getTimeInMillis(), DateUtils.SECOND_IN_MILLIS)));
+                busDirection.setText(getString(R.string.bus_direction, busLocation.getDes()));
 
                 return busInfoWindow;
             }
