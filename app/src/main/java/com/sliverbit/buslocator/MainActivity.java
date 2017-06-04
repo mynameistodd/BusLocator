@@ -9,6 +9,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.StringRes;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +21,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements
     private MapFragment mapFragment;
     private BusTimeService service;
     private SimpleDateFormat simpleDateFormat;
+    private Snackbar snackBar;
+    private CoordinatorLayout mainCoordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements
         service = retrofit.create(BusTimeService.class);
 
         simpleDateFormat = new SimpleDateFormat("yyyyMMdd HH:mm", Locale.getDefault());
+        mainCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.mainCoordinatorLayout);
     }
 
     @Override
@@ -155,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<BustimeResponse> call, Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
+                showSnackbar(R.string.no_route_data);
             }
         });
     }
@@ -217,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements
                     routeDialogFragment.setArguments(args);
                     routeDialogFragment.show(getFragmentManager(), "routeFragment");
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
+                    showSnackbar(R.string.no_route_data);
                 }
                 return true;
             case R.id.action_refresh:
@@ -345,6 +350,10 @@ public class MainActivity extends AppCompatActivity implements
             map.clear();
         }
 
+        if (snackBar != null) {
+            snackBar.dismiss();
+        }
+
         busMarkerHashMap.clear();
 
         Set<String> savedRouteAbbrSet = prefs.getStringSet(getString(R.string.saved_route_abbr_set), new HashSet<String>() {{
@@ -379,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements
                 @Override
                 public void onFailure(Call<BustimeResponse> call, Throwable t) {
                     t.printStackTrace();
-                    Toast.makeText(getApplicationContext(), R.string.no_route_data, Toast.LENGTH_SHORT).show();
+                    showSnackbar(R.string.no_route_data);
                 }
             });
 
@@ -419,9 +428,22 @@ public class MainActivity extends AppCompatActivity implements
                 @Override
                 public void onFailure(Call<BustimeResponse> call, Throwable t) {
                     t.printStackTrace();
-                    Toast.makeText(getApplicationContext(), R.string.no_location_data, Toast.LENGTH_SHORT).show();
+                    showSnackbar(R.string.no_location_data);
                 }
             });
+        }
+    }
+
+    private void showSnackbar(@StringRes int stringId) {
+        if (snackBar == null || !snackBar.isShownOrQueued()) {
+            snackBar = Snackbar.make(mainCoordinatorLayout, stringId, Snackbar.LENGTH_INDEFINITE);
+            snackBar.setAction(R.string.retry, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    refresh();
+                }
+            });
+            snackBar.show();
         }
     }
 }
