@@ -3,6 +3,9 @@ package com.sliverbit.buslocator.models;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Root(name = "vehicle")
 public class Vehicle {
 
@@ -119,11 +122,23 @@ public class Vehicle {
     }
 
     public String getDes() {
-        return des;
+        return des.trim();
     }
 
     public void setDes(String value) {
         this.des = value;
+    }
+
+    public String getDirection() {
+        String direction = "";
+
+        java.util.regex.Pattern pattern = Pattern.compile("^([A-Da-d])?[ ].*");
+        Matcher matcher = pattern.matcher(getDes());
+        if (matcher.matches()) {
+            direction = matcher.group(1);
+        }
+
+        return direction;
     }
 
     public boolean isDly() {

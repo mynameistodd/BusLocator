@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/busAdherence"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
         android:text="On time"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/primary_text"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/busRoute"
@@ -19,7 +23,9 @@
         android:layout_height="wrap_content"
         android:text="Route# 18"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/secondary_text" />
+        android:textColor="@color/secondary_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="0dp" />
 
     <TextView
         android:id="@+id/busNum"
@@ -27,7 +33,9 @@
         android:layout_height="wrap_content"
         android:text="Bus# 474"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/secondary_text" />
+        android:textColor="@color/secondary_text"
+        app:layout_constraintStart_toStartOf="@+id/busAdherence"
+        app:layout_constraintTop_toBottomOf="@+id/busAdherence" />
 
     <TextView
         android:id="@+id/busUpdated"
@@ -35,7 +43,9 @@
         android:layout_height="wrap_content"
         android:text="Updated: 1 min ago"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/secondary_text" />
+        android:textColor="@color/secondary_text"
+        app:layout_constraintStart_toStartOf="@+id/busNum"
+        app:layout_constraintTop_toBottomOf="@+id/busNum" />
 
     <TextView
         android:id="@+id/busDirection"
@@ -43,5 +53,7 @@
         android:layout_height="wrap_content"
         android:text="Direction: to UM Hospital"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/secondary_text" />
-</LinearLayout>
+        android:textColor="@color/secondary_text"
+        app:layout_constraintStart_toStartOf="@+id/busUpdated"
+        app:layout_constraintTop_toBottomOf="@+id/busUpdated" />
+</android.support.constraint.ConstraintLayout>

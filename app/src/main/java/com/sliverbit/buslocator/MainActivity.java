@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements
                     busAdherence.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
                 }
 
-                busRoute.setText(getString(R.string.bus_route, busLocation.getRt()));
+                busRoute.setText(getString(R.string.bus_route, String.format("%s%s", busLocation.getRt(), busLocation.getDirection())));
                 busNum.setText(getString(R.string.bus_number, busLocation.getVid()));
                 busUpdated.setText(getString(R.string.bus_updated, DateUtils.getRelativeTimeSpanString(lastUpdatedDate.getTime(), Calendar.getInstance().getTimeInMillis(), DateUtils.SECOND_IN_MILLIS)));
                 busDirection.setText(getString(R.string.bus_direction, busLocation.getDes()));
