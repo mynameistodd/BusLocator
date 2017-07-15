@@ -1,0 +1,19 @@
+[
+  {
+    "outputType": {
+      "type": "APK"
+    },
+    "apkInfo": {
+      "type": "MAIN",
+      "splits": [],
+      "versionCode": 22100
+    },
+    "outputFile": {
+      "path": "/Users/tdeland/Projects/BusLocator/PlayStoreFiles/release/app-release.apk"
+    },
+    "properties": {
+      "packageId": "com.sliverbit.buslocator",
+      "split": ""
+    }
+  }
+]
