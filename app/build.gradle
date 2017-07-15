@@ -30,7 +30,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 def versionMajor = 2
 def versionMinor = 2
-def versionPatch = 0
+def versionPatch = 1
 def versionBuild = 0 // bump for dogfood builds, public betas, etc.
 
 android {
@@ -70,17 +70,13 @@ dependencies {
         exclude group: 'stax', module: 'stax'
     }
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
-
     compile 'com.google.firebase:firebase-core:10.2.6'
     compile 'com.google.firebase:firebase-crash:10.2.6'
     compile 'com.google.firebase:firebase-ads:10.2.6'
-
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
-
     compile 'com.google.android.gms:play-services-maps:10.2.6'
     compile 'com.google.android.gms:play-services-location:10.2.6'
-
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
     }
