@@ -1,0 +1,66 @@
+{
+  "project_info": {
+    "project_number": "1049951271881",
+    "firebase_url": "https://crypto-plexus-94717.firebaseio.com",
+    "project_id": "crypto-plexus-94717",
+    "storage_bucket": "crypto-plexus-94717.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049951271881:android:6bc5fdc92aebfd67",
+        "android_client_info": {
+          "package_name": "com.sliverbit.buslocator.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1049951271881-ta8j6fjpf2c8dr7c291usg84co4s8ppn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sliverbit.buslocator",
+            "certificate_hash": "38F907486A93BC3CAB5074ACBD5554E10C93E91B"
+          }
+        },
+        {
+          "client_id": "1049951271881-pf9bc7v2je3cvahpuvielelhaovpsbqu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sliverbit.buslocator",
+            "certificate_hash": "037CCFAE97F43025740D582EED72501314AEDF51"
+          }
+        },
+        {
+          "client_id": "1049951271881-ufss8bsiv6bmlqb8vtgr78kjmqnoori4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_Py_7sl-DGYJYYRL1PTNgZIEMqY98fBk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-26489424-3"
+          }
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1049951271881-ufss8bsiv6bmlqb8vtgr78kjmqnoori4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
