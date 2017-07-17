@@ -6,7 +6,7 @@
     "apkInfo": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 22100
+      "versionCode": 23000
     },
     "outputFile": {
       "path": "/Users/tdeland/Projects/BusLocator/PlayStoreFiles/release/app-release.apk"
