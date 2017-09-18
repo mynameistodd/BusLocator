@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private ArrayList<Route> routes;
+    private HashMap<String, String> routeColors;
     private SharedPreferences prefs;
     private GoogleApiClient googleApiClient;
     private GoogleMap map;
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements
 
         busMarkerHashMap = new HashMap<>();
         routes = new ArrayList<>();
+        routeColors = new HashMap<>();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://rt.theride.org")
@@ -154,8 +156,10 @@ public class MainActivity extends AppCompatActivity implements
                 BustimeResponse bustimeResponse = response.body();
 
                 routes.clear();
+                routeColors.clear();
                 for (Route route : bustimeResponse.getRoute()) {
                     routes.add(route);
+                    routeColors.put(route.getRouteDisplay(), route.getRouteColor());
                 }
             }
 
@@ -362,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements
             add("32");
         }});
 
-        for (String savedRouteAbbr : savedRouteAbbrSet) {
+        for (final String savedRouteAbbr : savedRouteAbbrSet) {
 
             Call<BustimeResponse> retroPatterns = service.getPatterns(API_KEY, savedRouteAbbr);
             retroPatterns.enqueue(new Callback<BustimeResponse>() {
@@ -371,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements
                     BustimeResponse bustimeResponse = response.body();
 
                     PolylineOptions lineOptions = new PolylineOptions();
-                    lineOptions.color(Color.BLUE);
+                    lineOptions.color(getRouteColor(savedRouteAbbr));
 
                     for (Pattern routePattern : bustimeResponse.getPattern()) {
                         for (Point point : routePattern.getPoint()) {
@@ -434,6 +438,14 @@ public class MainActivity extends AppCompatActivity implements
                 }
             });
         }
+    }
+
+    private int getRouteColor(String savedRouteAbbr) {
+        if (routeColors.containsKey(savedRouteAbbr)) {
+            String colorHash = routeColors.get(savedRouteAbbr);
+            return Color.parseColor(colorHash);
+        }
+        return Color.BLUE;
     }
 
     private void showSnackbar(@StringRes int stringId) {
