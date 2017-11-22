@@ -6,14 +6,13 @@
     "apkInfo": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 23000
+      "versionCode": 24000
     },
-    "outputFile": {
-      "path": "/Users/tdeland/Projects/BusLocator/PlayStoreFiles/release/app-release.apk"
-    },
+    "path": "app-release.apk",
     "properties": {
       "packageId": "com.sliverbit.buslocator",
-      "split": ""
+      "split": "",
+      "minSdkVersion": "15"
     }
   }
 ]
