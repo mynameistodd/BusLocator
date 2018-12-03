@@ -32,6 +32,9 @@
     <string name="pref_legal_text">Transit scheduling, geographic, and real-time data provided by permission of AAATA/TheRide</string>
     <string name="pref_legal_web_page_url">http://www.theride.org/</string>
 
+    <string name="pref_privacy_policy">Privacy Policy</string>
+    <string name="pref_privacy_policy_url">https://crypto-plexus-94717.firebaseapp.com/privacy_policy.html</string>
+
     <string name="pref_version_key">pref_version</string>
     <string name="pref_version">Version</string>
 
