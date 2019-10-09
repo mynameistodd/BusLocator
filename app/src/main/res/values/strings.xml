@@ -5,6 +5,7 @@
     <string name="retry">Retry</string>
     <string name="saved_route_index_set">saved_route_set</string>
     <string name="saved_route_abbr_set">saved_route_abbr_set</string>
+    <string name="admob_app_id">ca-app-pub-0720096656845056~2357135117</string>
     <string name="banner_ad_unit_id">ca-app-pub-0720096656845056/3833868313</string>
     <string name="no_location_data">Bus location not found</string>
     <string name="no_route_data">Route not found</string>

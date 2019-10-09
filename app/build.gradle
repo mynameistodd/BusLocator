@@ -42,11 +42,11 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
-    compileSdkVersion 26
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.sliverbit.buslocator"
-        minSdkVersion 15
-        targetSdkVersion 26
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}"
         signingConfig signingConfigs.config
@@ -63,23 +63,24 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile('com.squareup.retrofit2:converter-simplexml:2.1.0') {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation('com.squareup.retrofit2:converter-simplexml:2.6.2') {
         exclude group: 'xpp3', module: 'xpp3'
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'stax', module: 'stax'
     }
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.google.firebase:firebase-core:10.2.6'
-    compile 'com.google.firebase:firebase-crash:10.2.6'
-    compile 'com.google.firebase:firebase-ads:10.2.6'
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.google.android.gms:play-services-maps:10.2.6'
-    compile 'com.google.android.gms:play-services-location:10.2.6'
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    implementation 'com.squareup.retrofit2:retrofit:2.6.2'
+    implementation 'com.google.firebase:firebase-core:17.2.0'
+    implementation 'com.google.firebase:firebase-crash:16.2.1'
+    implementation 'com.google.firebase:firebase-ads:18.2.0'
+    implementation 'com.google.firebase:firebase-analytics:17.2.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
         transitive = true
     }
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }
 apply plugin: 'com.google.gms.google-services'
