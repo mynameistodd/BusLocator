@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = String.valueOf(MainActivity.class);
 
     private static final String SELECT_REFRESH = "select_refresh";
 
@@ -383,21 +386,22 @@ public class MainActivity extends AppCompatActivity implements
                 public void onResponse(Call<BustimeResponse> call, retrofit2.Response<BustimeResponse> response) {
                     BustimeResponse bustimeResponse = response.body();
 
-                    PolylineOptions lineOptions = new PolylineOptions();
-                    lineOptions.color(getRouteColor(savedRouteAbbr));
-
                     for (Pattern routePattern : bustimeResponse.getPattern()) {
+
+                        PolylineOptions lineOptions = new PolylineOptions();
+                        lineOptions.color(getRouteColor(savedRouteAbbr));
+
                         for (Point point : routePattern.getPoint()) {
                             Double lat = point.getLat();
                             Double lng = point.getLon();
 
                             LatLng latLngPoint = new LatLng(lat, lng);
 
+                            Log.d(TAG, "Route:" + savedRouteAbbr + "\tPatternId:" + routePattern.getPatternId() + "\tPoint:" + latLngPoint.toString());
                             lineOptions.add(latLngPoint);
                         }
+                        map.addPolyline(lineOptions);
                     }
-
-                    map.addPolyline(lineOptions);
                 }
 
                 @Override
