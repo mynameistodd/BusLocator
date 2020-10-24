@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
@@ -178,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onFailure(Call<BustimeResponse> call, Throwable t) {
                 t.printStackTrace();
-                showSnackbar(R.string.no_route_data);
+                showSnackbar(getString(R.string.no_route_data));
             }
         });
     }
@@ -240,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements
                     routeDialogFragment.setArguments(args);
                     routeDialogFragment.show(getFragmentManager(), "routeFragment");
                 } else {
-                    showSnackbar(R.string.no_route_data);
+                    showSnackbar(getString(R.string.no_route_data));
                 }
                 return true;
             case R.id.action_refresh:
@@ -407,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements
                 @Override
                 public void onFailure(Call<BustimeResponse> call, Throwable t) {
                     t.printStackTrace();
-                    showSnackbar(R.string.no_route_data);
+                    showSnackbar(getString(R.string.no_route_data));
                 }
             });
 
@@ -447,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements
                 @Override
                 public void onFailure(Call<BustimeResponse> call, Throwable t) {
                     t.printStackTrace();
-                    showSnackbar(R.string.no_location_data);
+                    showSnackbar(getString(R.string.no_location_data, savedRouteAbbr));
                 }
             });
         }
@@ -461,9 +460,9 @@ public class MainActivity extends AppCompatActivity implements
         return Color.BLUE;
     }
 
-    private void showSnackbar(@StringRes int stringId) {
+    private void showSnackbar(String message) {
         if (snackBar == null || !snackBar.isShownOrQueued()) {
-            snackBar = Snackbar.make(mainCoordinatorLayout, stringId, Snackbar.LENGTH_INDEFINITE);
+            snackBar = Snackbar.make(mainCoordinatorLayout, message, Snackbar.LENGTH_INDEFINITE);
             snackBar.setAction(R.string.retry, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
